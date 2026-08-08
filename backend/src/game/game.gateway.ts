@@ -62,11 +62,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly gameService: GameService) {}
 
   handleConnection(client: Socket) {
-    this.logger.log(`⚡ Client connected: ${client.id}`);
+    this.logger.log(`⚡ [CANLI OYUNCU BAĞLANDI] Socket ID: ${client.id}`);
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log(`❌ Client disconnected: ${client.id}`);
+    this.logger.log(`❌ [BAĞLANTI KESİLDİ] Socket ID: ${client.id}`);
     this.matchmakingQueue = this.matchmakingQueue.filter((u) => u.socketId !== client.id);
     this.tttMatchmakingQueue = this.tttMatchmakingQueue.filter((u) => u.socketId !== client.id);
 
@@ -104,6 +104,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       eloRating: 0,
     };
 
+    this.logger.log(`🎮 [1v1 ARAMA] ${user.username} sıraya girdi.`);
     this.matchmakingQueue = this.matchmakingQueue.filter((u) => u.socketId !== client.id);
     this.matchmakingQueue.push(user);
 
@@ -112,6 +113,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (this.matchmakingQueue.length >= 2) {
       const p1 = this.matchmakingQueue.shift()!;
       const p2 = this.matchmakingQueue.shift()!;
+      this.logger.log(`⚔️ [CANLI MAÇ BAŞLADI] ${p1.username} vs ${p2.username}`);
       await this.startMatchSimultaneousDraft(p1, p2);
     }
   }
@@ -128,6 +130,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       eloRating: 0,
     };
 
+    this.logger.log(`❌⭕ [TIC-TAC-TOE ARAMA] ${user.username} sıraya girdi.`);
     this.tttMatchmakingQueue = this.tttMatchmakingQueue.filter((u) => u.socketId !== client.id);
     this.tttMatchmakingQueue.push(user);
 
@@ -161,7 +164,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       socket1?.join(roomId);
       socket2?.join(roomId);
 
-      this.logger.log(`❌⭕ ONLINE TIC-TAC-TOE MATCH STARTED: ${p1.username} vs ${p2.username}`);
+      this.logger.log(`❌⭕ [CANLI TIC-TAC-TOE MAÇI] ${p1.username} vs ${p2.username}`);
       await this.startTicTacToeMatch(room);
     }
   }
