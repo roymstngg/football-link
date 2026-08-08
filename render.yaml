@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: football-link-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: node dist/main.js
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: football-link-db
+          property: connectionString
+
+databases:
+  - name: football-link-db
+    databaseName: football_link
+    user: postgres
