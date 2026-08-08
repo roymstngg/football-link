@@ -821,29 +821,11 @@
       return 'http://192.168.1.108:3000';
     }
 
-    // PUBLIC ONLINE MULTIPLAYER SERVER (PERMANENT FIXED SUBDOMAIN)
-    const PUBLIC_TUNNEL = 'https://footballlinklive3000.loca.lt';
+    // PUBLIC ONLINE MULTIPLAYER SERVER (RENDER.COM 24/7 LIVE CLOUD)
+    const PUBLIC_TUNNEL = 'https://football-link-backend.onrender.com';
     const SERVER_HOST = PUBLIC_TUNNEL;
-
-    // MONKEY PATCH FETCH FOR LOCALTUNNEL BYPASS
-    const _origFetch = window.fetch;
-    window.fetch = function(url, options = {}) {
-      options.headers = options.headers || {};
-      if (options.headers instanceof Headers) {
-        options.headers.set('Bypass-Tunnel-Reminder', 'true');
-      } else {
-        options.headers['Bypass-Tunnel-Reminder'] = 'true';
-      }
-      return _origFetch(url, options);
-    };
-
     let API_BASE = `${SERVER_HOST}/api`;
-    let socket = io(SERVER_HOST, {
-      transports: ['websocket', 'polling'],
-      extraHeaders: {
-        'Bypass-Tunnel-Reminder': 'true'
-      }
-    });
+    let socket = io(SERVER_HOST, { transports: ['websocket', 'polling'] });
 
     let roomId = null;
     let currentUser = null;
