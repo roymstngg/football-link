@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+*.apk
+*.log
+.DS_Store
+backend/node_modules
+backend/dist
+backend/.env

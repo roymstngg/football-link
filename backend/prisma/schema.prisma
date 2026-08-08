@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Country {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  code      String?
+  flag      String?
+  leagues   League[]
+  teams     Team[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model League {
+  id        String   @id @default(uuid())
+  apiId     Int?     @unique
+  name      String
+  type      String?
+  logo      String?
+  countryId String?
+  country   Country? @relation(fields: [countryId], references: [id])
+  teams     Team[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Team {
+  id            String         @id @default(uuid())
+  apiId         Int?           @unique
+  name          String
+  code          String?
+  countryId     String?
+  country       Country?       @relation(fields: [countryId], references: [id])
+  leagueId      String?
+  league        League?        @relation(fields: [leagueId], references: [id])
+  founded       Int?
+  national      Boolean        @default(false)
+  logo          String?
+  popularRank   Int            @default(0)
+  careers       PlayerCareer[]
+  transfersFrom Transfer[]     @relation("FromTeam")
+  transfersTo   Transfer[]     @relation("ToTeam")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Player {
+  id             String         @id @default(uuid())
+  apiId          Int?           @unique
+  name           String
+  normalizedName String
+  firstname      String?
+  lastname       String?
+  age            Int?
+  nationality    String?
+  height         String?
+  weight         String?
+  photo          String?
+  aliases        String[]
+  careers        PlayerCareer[]
+  transfers      Transfer[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model PlayerCareer {
+  id          String   @id @default(uuid())
+  playerId    String
+  player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  startYear   Int?
+  endYear     Int?
+  isLoan      Boolean  @default(false)
+  appearances Int?
+  goals       Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([playerId, teamId])
+}
+
+model Transfer {
+  id         String    @id @default(uuid())
+  playerId   String
+  player     Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  date       DateTime?
+  fromTeamId String?
+  fromTeam   Team?     @relation("FromTeam", fields: [fromTeamId], references: [id])
+  toTeamId   String?
+  toTeam     Team?     @relation("ToTeam", fields: [toTeamId], references: [id])
+  type       String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model User {
+  id               String         @id @default(uuid())
+  fullName         String?
+  username         String         @unique
+  email            String         @unique
+  password         String?
+  favTeam          String?        @default("Beşiktaş")
+  avatarUrl        String?
+  bio              String?
+  eloRating        Int            @default(0)
+  isVerified       Boolean        @default(false)
+  verificationCode String?
+  googleId         String?        @unique
+  isAdmin          Boolean        @default(false)
+  isBanned         Boolean        @default(false)
+  matchHistories   MatchHistory[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model MatchHistory {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opponentName  String
+  gameMode      String   @default("speed")
+  userScore     Int      @default(0)
+  opponentScore Int      @default(0)
+  isWin         Boolean  @default(false)
+  createdAt     DateTime @default(now())
+}
+

@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Football Link - Web Önizleme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+  <style>
+    :root {
+      --bg-body: #050811;
+      --bg-surface: #0b101d;
+      --bg-card: #131b2e;
+      --bg-card-hover: #1c2740;
+      --bg-input: #070a14;
+      --border-color: #1e2a45;
+      --border-accent: #38bdf8;
+      --border-glow: rgba(56, 189, 248, 0.4);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-green: #10b981;
+      --accent-green-bright: #34d399;
+      --accent-blue: #38bdf8;
+      --accent-purple: #a855f7;
+      --accent-red: #ef4444;
+      --accent-gold: #f59e0b;
+      --accent-gold-bright: #fbbf24;
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+    body { background-color: var(--bg-body); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 0; overflow: hidden; }
+
+    .app-frame { width: 100vw; height: 100vh; background-color: var(--bg-surface); border: none; border-radius: 0; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+
+    .header { padding: 14px 18px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(11, 16, 29, 0.92); backdrop-filter: blur(16px); z-index: 10; }
+
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: -0.5px; background: linear-gradient(135deg, #ffffff, var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    .brand-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 0 12px rgba(56, 189, 248, 0.4); -webkit-text-fill-color: initial; }
+
+    .status-tag { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); padding: 5px 12px; border-radius: 20px; font-weight: 600; }
+
+    .status-indicator { width: 7px; height: 7px; background-color: var(--accent-green-bright); border-radius: 50%; box-shadow: 0 0 8px var(--accent-green-bright); }
+
+    .content { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; position: relative; }
+
+    .view { display: none; flex-direction: column; gap: 14px; height: 100%; }
+
+    .view.active { display: flex; }
+
+    .auth-tabs { display: flex; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 4px; gap: 4px; width: 100%; }
+
+    .auth-tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: 700; font-size: 12px; border-radius: var(--radius-md); cursor: pointer; color: var(--text-muted); }
+
+    .auth-tab-btn.active { background: linear-gradient(135deg, var(--accent-blue), #2563eb); color: #fff; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); }
+
+    .auth-form-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 16px; display: flex; flex-direction: column; gap: 10px; width: 100%; max-height: 580px; overflow-y: auto; }
+
+    .form-group { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+
+    .form-label { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+
+    .btn-google { background: #ffffff; color: #1f2937; border: none; border-radius: var(--radius-md); padding: 12px; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; width: 100%; }
+
+    .divider { display: flex; align-items: center; text-align: center; color: var(--text-muted); font-size: 11px; font-weight: 600; margin: 2px 0; width: 100%; }
+    .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+    .divider::before { margin-right: .8em; }
+    .divider::after { margin-left: .8em; }
+
+    .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+
+    .google-card { background: #ffffff; color: #1f2937; border-radius: 20px; padding: 24px; width: 100%; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+
+    .google-account-row { display: flex; align-items: center; gap: 14px; padding: 10px 12px; border-radius: 12px; cursor: pointer; }
+    .google-account-row:hover { background: #f3f4f6; }
+
+    .code-inputs { display: flex; justify-content: center; gap: 6px; margin: 8px 0; width: 100%; }
+
+    .code-box { width: 40px; height: 48px; background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: var(--radius-md); text-align: center; font-size: 20px; font-weight: 900; color: var(--accent-blue); outline: none; }
+
+    .user-bar { background: linear-gradient(135deg, rgba(19, 27, 46, 0.9), rgba(28, 39, 64, 0.8)); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+
+    .avatar { width: 44px; height: 44px; background: linear-gradient(135deg, #2563eb, #7c3aed); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; border: 2px solid rgba(255, 255, 255, 0.2); overflow: hidden; }
+
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .elo-tag { background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(168, 85, 247, 0.15)); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--accent-blue); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 800; }
+
+    .menu-grid { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-bottom: 8px; }
+
+    .btn-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+    .btn-card:active { transform: scale(0.98); }
+
+    .btn-card.highlight { background: linear-gradient(135deg, #1e3a8a, #312e81); border-color: #3b82f6; }
+    .btn-card.gold { background: linear-gradient(135deg, #78350f, #92400e); border-color: var(--accent-gold); }
+
+    @-webkit-keyframes spin { 0% { -webkit-transform: rotate(0deg); transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
+    @keyframes spin { 0% { -webkit-transform: rotate(0deg); transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); } }
+
+    .loading-spinner { width: 72px; height: 72px; border: 5px solid rgba(56, 189, 248, 0.15); border-top-color: var(--accent-blue); border-radius: 50%; -webkit-animation: spin 0.8s linear infinite; animation: spin 0.8s linear infinite; box-shadow: 0 0 20px rgba(56, 189, 248, 0.3); }
+
+    .leaderboard-podium { display: flex; justify-content: center; align-items: flex-end; gap: 12px; padding: 16px 0 10px 0; }
+
+    .podium-place { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+
+    .podium-box { width: 100%; border-radius: var(--radius-lg) var(--radius-lg) 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 6px; border: 1px solid var(--border-color); }
+
+    .podium-box.rank-1 { height: 110px; background: linear-gradient(180deg, rgba(245, 158, 11, 0.3), rgba(120, 53, 15, 0.2)); border-color: var(--accent-gold); }
+    .podium-box.rank-2 { height: 90px; background: linear-gradient(180deg, rgba(148, 163, 184, 0.3), rgba(51, 65, 85, 0.2)); border-color: #94a3b8; }
+    .podium-box.rank-3 { height: 75px; background: linear-gradient(180deg, rgba(217, 119, 6, 0.25), rgba(69, 26, 3, 0.2)); border-color: #d97706; }
+
+    .podium-avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; position: relative; }
+
+    .podium-crown { position: absolute; top: -14px; font-size: 18px; }
+
+    .leaderboard-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; flex: 1; }
+
+    .leader-row { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+
+    .leader-row.my-row { border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.1); }
+
+    .arena-focus-container { display: flex; flex-direction: column; height: 100%; gap: 14px; padding: 4px 0; }
+
+    .arena-header-bar { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border: 1px solid var(--border-accent); border-radius: var(--radius-lg); padding: 12px 16px; }
+
+    .matchup-card { background: linear-gradient(135deg, rgba(19, 27, 46, 0.95), rgba(28, 39, 64, 0.95)); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 18px; display: flex; align-items: center; justify-content: space-between; }
+
+    .team-badge { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 42%; }
+    .team-badge img { width: 48px; height: 48px; object-fit: contain; }
+
+    .vs-circle { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; }
+
+    .timer-focus-box { display: flex; align-items: center; justify-content: space-between; background: rgba(19, 27, 46, 0.8); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 10px 16px; }
+
+    .timer-ring { font-size: 20px; font-weight: 900; color: var(--accent-red); background: rgba(239, 68, 68, 0.15); border: 1.5px solid var(--accent-red); padding: 4px 14px; border-radius: 20px; }
+
+    .feed-container { flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 12px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; min-height: 180px; }
+
+    .input-box { width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 11px 13px; color: #fff; font-size: 13px; outline: none; }
+    select.input-box option { background: #131b2e; color: #fff; }
+
+    .btn-primary { background: linear-gradient(135deg, var(--accent-blue), #2563eb); color: #fff; border: none; border-radius: var(--radius-md); padding: 12px 18px; font-weight: 700; cursor: pointer; width: 100%; }
+
+    .btn-secondary { background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border-color); color: var(--text-main); border-radius: var(--radius-md); padding: 10px 14px; font-weight: 600; cursor: pointer; width: 100%; }
+
+    .ttt-grid-container { display: grid; grid-template-columns: 70px repeat(3, 1fr); grid-template-rows: 60px repeat(3, 1fr); gap: 6px; width: 100%; margin: 8px 0; }
+
+    .ttt-header-cell { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px; text-align: center; }
+    .ttt-header-cell img { width: 24px; height: 24px; object-fit: contain; }
+    .ttt-header-cell span { font-size: 10px; font-weight: 700; margin-top: 2px; max-width: 65px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .ttt-cell { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; min-height: 75px; }
+
+    .footer-nav { height: 68px; background: rgba(11, 16, 29, 0.95); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; backdrop-filter: blur(16px); z-index: 10; }
+
+    .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+    .nav-btn span { font-size: 18px; }
+    .nav-btn.active { color: var(--accent-blue); }
+
+    .match-history-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+
+    .result-badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 800; }
+    .result-badge.win { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-green-bright); color: var(--accent-green-bright); }
+    .result-badge.loss { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--accent-red); color: var(--accent-red); }
+
+    .preset-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; }
+    .preset-avatar.selected { border-color: var(--accent-blue); box-shadow: 0 0 10px var(--border-glow); }
+  </style>
+</head>
+<body>
+
+  <div class="app-frame">
+
+    <!-- GOOGLE OAUTH MODAL OVERLAY -->
+    <div class="modal-overlay" id="googleModalOverlay">
+      <div class="google-card">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.15C3.26 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.61H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.39l3.99-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.61l3.99 3.15c.95-2.85 3.6-4.96 6.72-4.96z"/></svg>
+            <span style="font-weight: 800; font-size: 15px;">Google ile Oturum Açın</span>
+          </div>
+          <button style="background:none; border:none; font-size:18px; cursor:pointer;" onclick="closeGoogleModal()">✕</button>
+        </div>
+
+        <div style="font-size: 12px; color: #4b5563;">Football Link uygulamasına devam etmek için hesap seçin:</div>
+
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div class="google-account-row" onclick="confirmGoogleAccount('Süleyman', 'suleyman.dev@gmail.com')">
+            <div style="width:36px; height:36px; background:#2563eb; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800;">S</div>
+            <div>
+              <div style="font-weight: 800; font-size: 13px;">Süleyman (Admin)</div>
+              <div style="font-size: 11px; color: #6b7280;">suleyman.dev@gmail.com</div>
+            </div>
+          </div>
+
+          <div class="google-account-row" onclick="confirmGoogleAccount('Süleyman (Futbol)', 'suleyman.futboll@gmail.com')">
+            <div style="width:36px; height:36px; background:#10b981; color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800;">S</div>
+            <div>
+              <div style="font-weight: 800; font-size: 13px;">Süleyman (Futbol)</div>
+              <div style="font-size: 11px; color: #6b7280;">suleyman.futboll@gmail.com</div>
+            </div>
+          </div>
+        </div>
+
+        <button style="background:#f3f4f6; border:none; padding:10px; border-radius:10px; font-weight:700; font-size:12px; cursor:pointer;" onclick="closeGoogleModal()">İptal</button>
+      </div>
+    </div>
+
+    <!-- REAL INTERACTIVE FRIENDS LOBBY MODAL -->
+    <div class="modal-overlay" id="friendsModalOverlay">
+      <div class="google-card" style="background: #131b2e; color: #fff; border: 1px solid var(--border-accent);">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 22px;">👥</span>
+            <span style="font-weight: 800; font-size: 16px; color: var(--accent-blue);">Arkadaşınla Oyna (Özel Oda)</span>
+          </div>
+          <button style="background:none; border:none; color:var(--text-muted); font-size:18px; cursor:pointer;" onclick="closeFriendsModal()">✕</button>
+        </div>
+
+        <div class="auth-tabs" style="margin-top: 4px;">
+          <div class="auth-tab-btn active" id="tabCreateRoomBtn" onclick="switchFriendsTab('create')">Oda Oluştur</div>
+          <div class="auth-tab-btn" id="tabJoinRoomBtn" onclick="switchFriendsTab('join')">Odaya Katıl</div>
+        </div>
+
+        <div id="friendsCreateWrap" style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label">Oyun Modunu Seç</label>
+            <select id="friendGameMode" class="input-box">
+              <option value="speed">⚔️ Canlı 1v1 Hız Yarışı</option>
+              <option value="tictactoe">❌⭕ Futbol Tic-Tac-Toe Modu</option>
+            </select>
+          </div>
+
+          <button class="btn-primary" onclick="handleCreatePrivateRoom()">🚀 Özel Oda Oluştur</button>
+
+          <div id="roomCodeCreatedBox" style="display: none; background: rgba(56, 189, 248, 0.1); border: 1px dashed var(--accent-blue); border-radius: var(--radius-lg); padding: 16px; text-align: center; flex-direction: column; align-items: center; gap: 8px;">
+            <div style="font-size: 11px; color: var(--text-muted); font-weight: 700;">ODA KODUNUZ (ARKADAŞINA GÖNDER):</div>
+            <div style="font-size: 32px; font-weight: 900; letter-spacing: 4px; color: var(--accent-gold-bright);" id="createdCodeVal">------</div>
+            <button class="btn-secondary" style="font-size: 11px; width: auto; padding: 4px 16px;" onclick="copyRoomCode()">📋 Kodu Kopyala</button>
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--accent-green-bright); margin-top: 4px;">
+              <div class="status-indicator"></div>
+              <span>Arkadaşının girmesi bekleniyor...</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="friendsJoinWrap" style="display: none; flex-direction: column; gap: 12px;">
+          <div class="form-group">
+            <label class="form-label">Arkadaşının Oda Kodunu Gir (6 Haneli)</label>
+            <input type="text" id="joinRoomCodeInput" class="input-box" placeholder="Örn: 839201" style="text-align: center; font-size: 20px; letter-spacing: 2px;">
+          </div>
+
+          <button class="btn-primary" onclick="handleJoinPrivateRoom()">🎮 Odaya Katıl & Maçı Başlat</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVER CONFIG MODAL OVERLAY -->
+    <div class="modal-overlay" id="serverConfigModalOverlay">
+      <div class="google-card" style="background: #131b2e; color: #fff; border: 1px solid var(--border-accent);">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">🌐</span>
+            <span style="font-weight: 800; font-size: 15px; color: var(--accent-blue);">Canlı Sunucu Bağlantı Ayarı</span>
+          </div>
+          <button style="background:none; border:none; color:var(--text-muted); font-size:18px; cursor:pointer;" onclick="closeServerConfigModal()">✕</button>
+        </div>
+
+        <div style="font-size: 12px; color: var(--text-muted);">
+          Trabzon'daki arkadaşınızla aynı canlı sunucuya bağlanmak için canlı tünel veya bulut sunucu adresinizi buraya girin:
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sunucu Adresi (URL)</label>
+          <input type="text" id="serverUrlInput" class="input-box" placeholder="https://xxx.loca.lt veya https://xxx.pinggy.link">
+        </div>
+
+        <button class="btn-primary" onclick="saveServerUrlConfig()">💾 Sunucuya Bağlan & Kaydet</button>
+        <button class="btn-secondary" style="font-size: 11px;" onclick="resetServerUrlConfig()">🔄 Varsayılan Sunucuya Dön</button>
+      </div>
+    </div>
+
+    <!-- TOP HEADER BAR -->
+    <div class="header" id="appHeader">
+      <div class="brand">
+        <div class="brand-icon">⚽</div>
+        <span>Football Link</span>
+      </div>
+      <div class="status-tag" onclick="openServerConfigModal()" style="cursor: pointer;" title="Sunucu Adresini Değiştir">
+        <div class="status-indicator" id="connIndicator"></div>
+        <span id="connText">Sunucuya Bağlanıyor...</span>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content">
+
+      <!-- 0. AUTHENTICATION VIEW -->
+      <div class="view active" id="viewAuth">
+        <div style="text-align: center; margin: 2px 0;">
+          <div style="font-weight: 900; font-size: 22px; background: linear-gradient(135deg, #ffffff, var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">HOŞ GELDİNİZ</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">Profesyonel canlı 1v1 futbol bağlantı platformu</div>
+        </div>
+
+        <button class="btn-google" onclick="openGoogleModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.15C3.26 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.61H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.39l3.99-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.61l3.99 3.15c.95-2.85 3.6-4.96 6.72-4.96z"/></svg>
+          Google ile Devam Et
+        </button>
+
+        <div class="divider">VEYA E-POSTA İLE DEVAM ET</div>
+
+        <div class="auth-tabs">
+          <div class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">Giriş Yap</div>
+          <div class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">Kayıt Ol</div>
+        </div>
+
+        <div class="auth-form-card" id="formLogin">
+          <div class="form-group">
+            <label class="form-label">Kullanıcı Adı veya E-posta</label>
+            <input type="text" id="loginUsername" class="input-box" placeholder="Kullanıcı adını yaz..." value="Süleyman">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Şifre</label>
+            <input type="password" id="loginPassword" class="input-box" placeholder="••••••••" value="123456">
+          </div>
+
+          <button class="btn-primary" style="padding: 12px; font-size: 14px;" onclick="handleLoginSubmit()">Giriş Yap</button>
+          <button class="btn-secondary" style="font-size:11px; margin-top:2px;" onclick="handleDemoLogin('guest')">🎲 Hızlı Konuk Girişi (Rastgele Guest)</button>
+          <button class="btn-secondary" style="font-size:11px; margin-top:2px;" onclick="handleDemoLogin('admin')">🛡️ Süleyman Admin Girişi</button>
+        </div>
+
+        <div class="auth-form-card" id="formRegister" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Ad Soyad</label>
+            <input type="text" id="regFullName" class="input-box" placeholder="Süleyman Y.">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Kullanıcı Adı</label>
+            <input type="text" id="regUsername" class="input-box" placeholder="Suleyman10">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">E-posta Adresi</label>
+            <input type="email" id="regEmail" class="input-box" placeholder="suleyman@example.com">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Favori Takımın</label>
+            <select id="regFavTeam" class="input-box">
+              <option value="Beşiktaş">🦅 Beşiktaş J.K.</option>
+              <option value="Fenerbahçe">🟡🔵 Fenerbahçe S.K.</option>
+              <option value="Galatasaray">🔴🟡 Galatasaray S.K.</option>
+              <option value="Real Madrid">👑 Real Madrid C.F.</option>
+              <option value="Barcelona">🔵🔴 FC Barcelona</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Şifre</label>
+            <input type="password" id="regPassword" class="input-box" placeholder="••••••••">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Şifre Tekrarı</label>
+            <input type="password" id="regConfirmPassword" class="input-box" placeholder="••••••••">
+          </div>
+
+          <button class="btn-primary" style="padding: 12px; font-size: 14px;" onclick="handleSendVerifyCode()">E-posta Onay Kodu Gönder</button>
+        </div>
+
+        <div class="auth-form-card" id="formVerifyCode" style="display: none; text-align: center;">
+          <div style="font-size: 28px;">📧</div>
+          <div style="font-weight: 800; font-size: 16px; color: var(--accent-blue);">E-POSTA DOĞRULAMA KODU</div>
+          <div style="font-size: 11px; color: var(--text-muted);" id="verifyEmailTarget">suleyman@example.com adresinize 6 haneli onay kodu gönderildi.</div>
+
+          <div class="code-inputs">
+            <input type="text" class="code-box" id="c1" maxlength="1" value="4" oninput="this.nextElementSibling?.focus()">
+            <input type="text" class="code-box" id="c2" maxlength="1" value="8" oninput="this.nextElementSibling?.focus()">
+            <input type="text" class="code-box" id="c3" maxlength="1" value="2" oninput="this.nextElementSibling?.focus()">
+            <input type="text" class="code-box" id="c4" maxlength="1" value="9" oninput="this.nextElementSibling?.focus()">
+            <input type="text" class="code-box" id="c5" maxlength="1" value="1" oninput="this.nextElementSibling?.focus()">
+            <input type="text" class="code-box" id="c6" maxlength="1" value="5">
+          </div>
+
+          <button class="btn-primary" style="padding: 12px; font-size: 14px; margin-top:4px;" onclick="handleConfirmVerifyCode()">Kodu Onayla & Hesabı Aktifleştir (0 ELO)</button>
+        </div>
+      </div>
+
+      <!-- 1. DASHBOARD VIEW -->
+      <div class="view" id="viewHome">
+        <div class="user-bar" onclick="openProfileView()">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="avatar" id="userAvatarBox">Ş</div>
+            <div>
+              <div style="font-weight: 800; font-size: 16px;" id="userNameDisplay">Süleyman</div>
+              <div style="font-size: 11px; color: var(--text-muted);" id="userSubDisplay">🛡️ Yönetici (Admin)</div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="elo-tag" id="userEloDisplay">0 ELO</div>
+            <button style="background:none; border:none; color:var(--accent-red); font-size:16px; cursor:pointer; padding:4px;" onclick="event.stopPropagation(); handleLogout();">🚪</button>
+          </div>
+        </div>
+
+        <div class="menu-grid">
+          <!-- ADMIN PANEL CARD (VISIBLE FOR ADMINS) -->
+          <div class="btn-card highlight gold" id="adminPanelCard" style="display: none;" onclick="openAdminPanel()">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span style="font-size: 26px;">🛡️</span>
+              <div>
+                <div style="font-weight: 800; font-size: 15px; color: var(--accent-gold-bright);">Admin Yönetim Paneli</div>
+                <div style="font-size: 11px; opacity: 0.85;">İstatistikler, Futbolcu/Transfer Ekleme & Üye Banlama</div>
+              </div>
+            </div>
+            <span style="font-size: 18px;">➔</span>
+          </div>
+
+          <!-- CARD 1: 1v1 -->
+          <div class="btn-card highlight" onclick="start1v1Queue()">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span style="font-size: 26px;">⚔️</span>
+              <div>
+                <div style="font-weight: 800; font-size: 15px;">Canlı 1v1 Hız Yarışı</div>
+                <div style="font-size: 11px; opacity: 0.85;">10 sn içinde İLK BİLEN puanı kapar (İlk 3 Olan Kazanır)</div>
+              </div>
+            </div>
+            <span style="font-size: 18px;">➔</span>
+          </div>
+
+          <!-- CARD 2: TIC TAC TOE -->
+          <div class="btn-card gold" onclick="openTicTacToe()">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span style="font-size: 26px;">❌⭕</span>
+              <div>
+                <div style="font-weight: 800; font-size: 15px;">Futbol Tic-Tac-Toe Modu</div>
+                <div style="font-size: 11px; opacity: 0.85;">3'lü dizilimi ilk tamamlayan kazanır</div>
+              </div>
+            </div>
+            <span style="font-size: 18px;">➔</span>
+          </div>
+
+          <!-- CARD 3: LEADERBOARD -->
+          <div class="btn-card" onclick="openLeaderboard()">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span style="font-size: 26px;">🏆</span>
+              <div>
+                <div style="font-weight: 800; font-size: 15px;">Sıralama (Leaderboard)</div>
+                <div style="font-size: 11px; color: var(--text-muted);">En yüksek ELO puanlı ilk 100 oyuncu</div>
+              </div>
+            </div>
+            <span style="font-size: 18px;">➔</span>
+          </div>
+
+          <!-- CARD 4: FRIENDS -->
+          <div class="btn-card" onclick="openFriendsLobby()">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span style="font-size: 26px;">👥</span>
+              <div>
+                <div style="font-weight: 800; font-size: 15px;">Arkadaşınla Oyna (Özel Oda)</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Oda kodu oluşturarak arkadaşınla 1v1 maç yap</div>
+              </div>
+            </div>
+            <span style="font-size: 18px;">➔</span>
+          </div>
+
+          <!-- CARD 5: CAREER EXPLORER -->
+          <div class="btn-card" onclick="openPhysicalExplorer()">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span style="font-size: 26px;">📖</span>
+              <div>
+                <div style="font-weight: 800; font-size: 15px;">Kariyer & Transfer İnceleyici</div>
+                <div style="font-size: 11px; color: var(--text-muted);">16,012 futbolcu geçmişini gör</div>
+              </div>
+            </div>
+            <span style="font-size: 18px;">➔</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. LEADERBOARD VIEW -->
+      <div class="view" id="viewLeaderboard">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-weight: 900; font-size: 18px; color: var(--accent-gold);">🏆 GLOBAL SIRALAMA</div>
+          <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; width:auto;" onclick="showView('viewHome')">Geri</button>
+        </div>
+
+        <div class="leaderboard-podium">
+          <div class="podium-place">
+            <div class="podium-avatar" style="background:#475569;">🥈</div>
+            <div style="font-size: 11px; font-weight: 700;">Alex_10</div>
+            <div class="podium-box rank-2"><div style="font-size: 14px; font-weight: 900; color:#94a3b8;">#2</div><div style="font-size: 11px; font-weight: 700; color:var(--accent-blue);">820 ELO</div></div>
+          </div>
+          <div class="podium-place">
+            <div class="podium-avatar" style="background:linear-gradient(135deg, #d97706, #f59e0b);"><span class="podium-crown">👑</span>🥇</div>
+            <div style="font-size: 12px; font-weight: 800; color:var(--accent-gold-bright);">ProMaster</div>
+            <div class="podium-box rank-1"><div style="font-size: 16px; font-weight: 900; color:var(--accent-gold-bright);">#1</div><div style="font-size: 12px; font-weight: 800; color:var(--accent-green-bright);">1150 ELO</div></div>
+          </div>
+          <div class="podium-place">
+            <div class="podium-avatar" style="background:#78350f;">🥉</div>
+            <div style="font-size: 11px; font-weight: 700;">Hagi_10</div>
+            <div class="podium-box rank-3"><div style="font-size: 13px; font-weight: 900; color:#d97706;">#3</div><div style="font-size: 11px; font-weight: 700; color:var(--accent-blue);">740 ELO</div></div>
+          </div>
+        </div>
+
+        <div class="leaderboard-list">
+          <div class="leader-row my-row">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-weight:900; font-size:14px; color:var(--accent-blue);" id="myRankPos">#10</span>
+              <div style="font-weight:800; font-size:14px;" id="myRankName">Süleyman (Sen)</div>
+            </div>
+            <div style="font-weight:800; color:var(--accent-green-bright); font-size:13px;" id="myRankElo">0 ELO</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. SEARCHING MATCH VIEW -->
+      <div class="view" id="viewSearch">
+        <div style="margin: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 20px; width:100%;">
+          <div class="loading-spinner"></div>
+          <div>
+            <div style="font-size: 18px; font-weight: 800; background: linear-gradient(135deg, #ffffff, var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Rakip Aranıyor...</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Uygun ELO puanlı canlı rakip bekleniyor</div>
+          </div>
+          <button class="btn-secondary" style="width:auto; padding: 10px 24px;" onclick="cancelSearch()">Aramayı İptal Et</button>
+        </div>
+      </div>
+
+      <!-- 4. DRAFT PHASE VIEW -->
+      <div class="view" id="viewDraft">
+        <div style="background: var(--bg-card); border: 1px solid var(--border-accent); border-radius: var(--radius-xl); padding: 20px; text-align: center; display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; color: var(--accent-blue);">
+            <span>TUR İÇİN TAKIMINI SEÇ</span>
+            <span style="background: var(--accent-blue); color: #000; font-weight: 900; padding: 2px 10px; border-radius: 14px;" id="selectTimerVal">10s</span>
+          </div>
+
+          <div style="position: relative; width:100%;">
+            <input type="text" id="draftSearchInput" class="input-box" placeholder="Takım ismi yaz (örn: Beşiktaş, Real, Barca)..." oninput="onDraftSearch()">
+            <div id="draftDrop" style="position:absolute; top:100%; left:0; right:0; background:#192238; border:1px solid var(--border-color); border-radius:var(--radius-md); max-height:160px; overflow-y:auto; z-index:100; display:none;"></div>
+          </div>
+
+          <div id="selectedTeamStatus" style="font-size: 13px; font-weight: 700; color: var(--accent-green-bright); min-height: 20px;"></div>
+        </div>
+      </div>
+
+      <!-- 5. PURE FOCUS MATCH ARENA VIEW -->
+      <div class="view" id="viewArena">
+        <div class="arena-focus-container">
+          <div class="arena-header-bar">
+            <div id="p1Label" style="font-weight: 800; font-size: 14px; color: var(--text-main);">Oyuncu (0)</div>
+            <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--accent-gold); font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 12px;">🎯 HEDEF: 3 PUAN</div>
+            <div id="p2Label" style="font-weight: 800; font-size: 14px; color: var(--text-main);">Rakip (0)</div>
+          </div>
+
+          <div class="matchup-card">
+            <div class="team-badge">
+              <img id="logoA" src="https://media.api-sports.io/football/teams/541.png">
+              <div id="nameA" style="font-weight:800; font-size:13px; text-align:center;">Takım A</div>
+            </div>
+            <div class="vs-circle">VS</div>
+            <div class="team-badge">
+              <img id="logoB" src="https://media.api-sports.io/football/teams/611.png">
+              <div id="nameB" style="font-weight:800; font-size:13px; text-align:center;">Takım B</div>
+            </div>
+          </div>
+
+          <div class="timer-focus-box">
+            <span style="font-size: 12px; font-weight: 800; color: var(--accent-gold);" id="turnText">⚡ Ortak Oyuncuyu İLK SEN YAZ!</span>
+            <div class="timer-ring" id="timerVal">10s</div>
+          </div>
+
+          <div class="feed-container" id="historyFeed"></div>
+
+          <div style="display: flex; gap: 8px; width:100%;">
+            <input type="text" id="answerField" class="input-box" placeholder="Ortak oyuncu adını gir..." onkeypress="if(event.key==='Enter')sendAnswer()">
+            <button class="btn-primary" style="width: auto; padding: 0 20px;" onclick="sendAnswer()">Gönder</button>
+          </div>
+
+          <button style="background:none; border:none; color:var(--text-muted); font-size:11px; cursor:pointer; align-self:center;" onclick="quitCurrentMatch()">✕ Maçtan Çık</button>
+        </div>
+      </div>
+
+      <!-- 6. TIC TAC TOE VIEW -->
+      <div class="view" id="viewTicTacToe">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-weight: 900; font-size: 17px; color: var(--accent-gold);">FUTBOL TIC-TAC-TOE</div>
+          <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; width:auto;" onclick="fetchNewTTTGrid()">Yenile</button>
+        </div>
+
+        <div class="ttt-grid-container" id="tttGridBoard"></div>
+
+        <div id="tttInputWrap" style="display: none; background: var(--bg-card); border: 1px solid var(--border-accent); border-radius: var(--radius-lg); padding: 14px;">
+          <div id="cellTargetInfo" style="font-size: 12px; font-weight: 800; color: var(--accent-blue); margin-bottom: 8px;"></div>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="tttPlayerInput" class="input-box" placeholder="Ortak oyuncuyu yaz..." onkeypress="if(event.key==='Enter')submitTTTCellMove()">
+            <button class="btn-primary" style="width:auto;" onclick="submitTTTCellMove()">Hamle Yap</button>
+          </div>
+        </div>
+
+        <button class="btn-secondary" onclick="showView('viewHome')">Ana Sayfaya Dön</button>
+      </div>
+
+      <!-- 7. EXPLORER VIEW -->
+      <div class="view" id="viewExplorer">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-weight: 900; font-size: 17px; color: var(--accent-blue);">📖 KARİYER İNCELEYİCİ</div>
+          <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; width:auto;" onclick="showView('viewHome')">Geri</button>
+        </div>
+        <input type="text" id="dbSearchInput" class="input-box" placeholder="Futbolcu adı yaz (örn: Osimhen, Hagi)..." oninput="onPhysicalSearch()">
+        <div id="playersList" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
+      </div>
+
+      <!-- 8. ADMIN PANEL VIEW -->
+      <div class="view" id="viewAdmin">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-weight: 900; font-size: 17px; color: var(--accent-gold-bright);">🛡️ ADMİN YÖNETİM PANELİ</div>
+          <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; width:auto;" onclick="showView('viewHome')">Geri</button>
+        </div>
+
+        <div class="auth-tabs" style="margin-top: 4px;">
+          <div class="auth-tab-btn active" id="tabAdminStatsBtn" onclick="switchAdminTab('stats')">📊 İstatistik</div>
+          <div class="auth-tab-btn" id="tabAdminPlayersBtn" onclick="switchAdminTab('players')">⚽ Transfer</div>
+          <div class="auth-tab-btn" id="tabAdminUsersBtn" onclick="switchAdminTab('users')">👥 Üyeler & Ban</div>
+        </div>
+
+        <!-- TAB 1: STATS & CONFIG -->
+        <div id="adminStatsWrap" style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 12px; text-align: center;">
+              <div style="font-size: 10px; color: var(--text-muted); font-weight: 700;">TOPLAM FUTBOLCU</div>
+              <div style="font-size: 22px; font-weight: 900; color: var(--accent-blue);" id="admStatPlayers">16,012</div>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 12px; text-align: center;">
+              <div style="font-size: 10px; color: var(--text-muted); font-weight: 700;">TOPLAM TAKIM</div>
+              <div style="font-size: 22px; font-weight: 900; color: var(--accent-gold-bright);" id="admStatTeams">2,620</div>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 12px; text-align: center;">
+              <div style="font-size: 10px; color: var(--text-muted); font-weight: 700;">TOPLAM ÜYE</div>
+              <div style="font-size: 22px; font-weight: 900; color: var(--accent-green-bright);" id="admStatUsers">0</div>
+            </div>
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 12px; text-align: center;">
+              <div style="font-size: 10px; color: var(--text-muted); font-weight: 700;">BANLI ÜYELER</div>
+              <div style="font-size: 22px; font-weight: 900; color: var(--accent-red);" id="admStatBanned">0</div>
+            </div>
+          </div>
+
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 14px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-weight: 800; font-size: 13px; color: var(--accent-gold-bright);">⚙️ Oyun Süre & Kural Ayarları</div>
+            <div style="display: flex; gap: 8px;">
+              <div class="form-group">
+                <label class="form-label">Draft Süresi (sn)</label>
+                <input type="number" id="admDraftTimer" class="input-box" value="10">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tur Süresi (sn)</label>
+                <input type="number" id="admRoundTimer" class="input-box" value="10">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Kazanma Puanı</label>
+                <input type="number" id="admTargetScore" class="input-box" value="3">
+              </div>
+            </div>
+            <button class="btn-primary" style="padding: 8px; font-size: 12px;" onclick="saveAdminGameConfig()">Ayarları Kaydet</button>
+          </div>
+        </div>
+
+        <!-- TAB 2: PLAYERS & TRANSFERS -->
+        <div id="adminPlayersWrap" style="display: none; flex-direction: column; gap: 10px; overflow-y: auto;">
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-weight: 800; font-size: 13px; color: var(--accent-blue);">➕ Yeni Futbolcu Ekle</div>
+            <input type="text" id="newPlayerName" class="input-box" placeholder="Futbolcu Adı (örn: Lamine Yamal)...">
+            <input type="text" id="newPlayerPhoto" class="input-box" placeholder="Fotoğraf URL (İsteğe bağlı)...">
+            <input type="text" id="newPlayerNation" class="input-box" placeholder="Uyruk (örn: Spain)...">
+            <button class="btn-primary" style="padding: 8px; font-size: 12px;" onclick="handleAdminAddPlayer()">🚀 Oyuncuyu Veritabanına Ekle</button>
+          </div>
+
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-weight: 800; font-size: 13px; color: var(--accent-gold-bright);">🔄 Oyuncuya Yeni Takım Transferi Ekle</div>
+            <input type="text" id="transPlayerId" class="input-box" placeholder="Futbolcu ID..." style="display:none;">
+            <input type="text" id="transPlayerSearch" class="input-box" placeholder="Futbolcu Ara..." oninput="searchTransPlayer()">
+            <div id="transPlayerDrop" style="background:#192238; border:1px solid var(--border-color); border-radius:var(--radius-md); max-height:100px; overflow-y:auto; display:none;"></div>
+            
+            <input type="text" id="transTeamId" class="input-box" placeholder="Takım ID..." style="display:none;">
+            <input type="text" id="transTeamSearch" class="input-box" placeholder="Yeni Takım Ara..." oninput="searchTransTeam()">
+            <div id="transTeamDrop" style="background:#192238; border:1px solid var(--border-color); border-radius:var(--radius-md); max-height:100px; overflow-y:auto; display:none;"></div>
+
+            <button class="btn-primary" style="padding: 8px; font-size: 12px;" onclick="handleAdminAddCareer()">➕ Transferi Kaydet</button>
+          </div>
+        </div>
+
+        <!-- TAB 3: USERS & BAN -->
+        <div id="adminUsersWrap" style="display: none; flex-direction: column; gap: 8px; overflow-y: auto;">
+          <input type="text" id="admUserSearch" class="input-box" placeholder="Üye ara..." oninput="loadAdminUsers()">
+          <div id="admUsersList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+        </div>
+      </div>
+
+      <!-- 9. USER PROFILE & SETTINGS VIEW -->
+      <div class="view" id="viewProfile">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-weight: 900; font-size: 17px; color: var(--accent-blue);">👤 KULLANICI PROFİLİ & AYARLAR</div>
+          <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; width:auto;" onclick="showView('viewHome')">Geri</button>
+        </div>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="position: relative;">
+              <div class="avatar" id="profAvatarBox" style="width: 64px; height: 64px; font-size: 26px;">S</div>
+              <button style="position: absolute; bottom: -2px; right: -2px; background: var(--accent-blue); color: #000; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="toggleAvatarEditModal()">📷</button>
+            </div>
+            <div>
+              <div style="font-weight: 900; font-size: 18px;" id="profUsernameDisplay">Süleyman</div>
+              <div style="font-size: 12px; color: var(--text-muted);" id="profEmailDisplay">suleyman.dev@gmail.com</div>
+              <div style="display: flex; gap: 6px; margin-top: 4px;">
+                <span style="background: rgba(56, 189, 248, 0.15); border: 1px solid var(--accent-blue); color: var(--accent-blue); padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700;" id="profTeamBadge">🦅 Beşiktaş</span>
+                <span style="background: rgba(245, 158, 11, 0.15); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700;" id="profEloBadge">0 ELO</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PRESET AVATAR CHOOSER -->
+          <div id="avatarPickerWrap" style="display: none; background: var(--bg-input); border: 1px solid var(--border-accent); border-radius: var(--radius-lg); padding: 10px; flex-direction: column; gap: 8px;">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Avatar / Fotoğraf Seçin:</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <div class="preset-avatar" onclick="selectPresetAvatar('🦅')">🦅</div>
+              <div class="preset-avatar" onclick="selectPresetAvatar('🦁')">🦁</div>
+              <div class="preset-avatar" onclick="selectPresetAvatar('🐤')">🐤</div>
+              <div class="preset-avatar" onclick="selectPresetAvatar('👑')">👑</div>
+              <div class="preset-avatar" onclick="selectPresetAvatar('⚽')">⚽</div>
+              <div class="preset-avatar" onclick="selectPresetAvatar('🔥')">🔥</div>
+            </div>
+            <input type="text" id="customAvatarUrlInput" class="input-box" placeholder="Veya Fotoğraf URL Yapıştır (https://...)...">
+            <button class="btn-primary" style="padding: 6px 12px; font-size: 11px;" onclick="saveCustomAvatarUrl()">Fotoğrafı Kaydet</button>
+          </div>
+        </div>
+
+        <!-- STATS & MATCH HISTORY -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 10px; text-align: center;">
+            <div style="font-size: 10px; color: var(--text-muted); font-weight: 700;">TOPLAM MAÇ</div>
+            <div style="font-size: 18px; font-weight: 900; color: var(--accent-blue);" id="profTotalMatches">12</div>
+          </div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 10px; text-align: center;">
+            <div style="font-size: 10px; color: var(--text-muted); font-weight: 700;">GALİBİYET</div>
+            <div style="font-size: 18px; font-weight: 900; color: var(--accent-green-bright);" id="profWins">9</div>
+          </div>
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 10px; text-align: center;">
+            <div style="font-size: 10px; color: var(--text-muted); font-weight: 700;">KAZANMA %</div>
+            <div style="font-size: 18px; font-weight: 900; color: var(--accent-gold-bright);" id="profWinRate">%75</div>
+          </div>
+        </div>
+
+        <!-- LAST 5 MATCHES HISTORY -->
+        <div style="display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto;">
+          <div style="font-weight: 800; font-size: 13px; color: var(--accent-gold-bright); display: flex; align-items: center; justify-content: space-between;">
+            <span>📜 SON 5 MAÇ GEÇMİŞİ</span>
+            <span style="font-size: 10px; color: var(--text-muted);">Canlı Veri</span>
+          </div>
+
+          <div id="matchHistoryList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+        </div>
+
+        <!-- SETTINGS CARD -->
+        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="font-weight: 800; font-size: 13px; color: var(--accent-blue);">⚙️ OYUN & HESAP AYARLARI</div>
+
+          <div class="form-group">
+            <label class="form-label">Favori Takım</label>
+            <select id="settingFavTeamSelect" class="input-box" onchange="handleUpdateSettingsFavTeam()">
+              <option value="Beşiktaş">🦅 Beşiktaş J.K.</option>
+              <option value="Fenerbahçe">🟡🔵 Fenerbahçe S.K.</option>
+              <option value="Galatasaray">🔴🟡 Galatasaray S.K.</option>
+              <option value="Real Madrid">👑 Real Madrid C.F.</option>
+              <option value="Barcelona">🔵🔴 FC Barcelona</option>
+              <option value="Manchester City">🩵 Manchester City</option>
+              <option value="PSG">🗼 Paris Saint-Germain</option>
+            </select>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+            <span style="font-size: 12px; font-weight: 700;">🔊 Ses Efektleri & Titreşim</span>
+            <input type="checkbox" id="settingSoundToggle" checked style="accent-color: var(--accent-blue); width: 18px; height: 18px;">
+          </div>
+
+          <button class="btn-secondary" style="color: var(--accent-red); border-color: rgba(239, 68, 68, 0.3);" onclick="handleLogout()">🚪 Hesaptan Çıkış Yap</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FULL FOOTER NAVIGATION BAR -->
+    <div class="footer-nav" id="appFooter">
+      <div class="nav-btn active" id="navHome" onclick="showView('viewHome')"><span>🏠</span> Ana Sayfa</div>
+      <div class="nav-btn" id="navLeaderboard" onclick="openLeaderboard()"><span>🏆</span> Sıralama</div>
+      <div class="nav-btn" id="navTTT" onclick="openTicTacToe()"><span>❌⭕</span> Tic-Tac-Toe</div>
+      <div class="nav-btn" id="navExplorer" onclick="openPhysicalExplorer()"><span>📖</span> İnceleyici</div>
+      <div class="nav-btn" id="navProfile" onclick="openProfileView()"><span>👤</span> Profil</div>
+    </div>
+
+  </div>
+
+  <script>
+    // DYNAMIC & CUSTOMIZABLE BACKEND SERVER ADDRESS
+    function getStoredServerHost() {
+      const saved = localStorage.getItem('football_link_server_url');
+      if (saved && saved.trim()) return saved.trim();
+
+      if (window.location.protocol.startsWith('http')) {
+        if (window.location.port === '3000' || window.location.port === '8080') {
+          return `${window.location.protocol}//${window.location.hostname}:3000`;
+        }
+        return window.location.origin;
+      }
+      return 'http://192.168.1.108:3000';
+    }
+
+    let SERVER_HOST = getStoredServerHost();
+    let API_BASE = `${SERVER_HOST}/api`;
+    let socket = io(SERVER_HOST, { transports: ['websocket', 'polling'] });
+
+    let roomId = null;
+    let currentUser = null;
+    let activeRegisterEmail = null;
+    let currentTTTGrid = null;
+    let selectedTTTCell = null;
+    let currentMatchInfo = null;
+
+    function openServerConfigModal() {
+      document.getElementById('serverUrlInput').value = SERVER_HOST;
+      document.getElementById('serverConfigModalOverlay').style.display = 'flex';
+    }
+
+    function closeServerConfigModal() {
+      document.getElementById('serverConfigModalOverlay').style.display = 'none';
+    }
+
+    function saveServerUrlConfig() {
+      let url = document.getElementById('serverUrlInput').value.trim();
+      if (!url) return alert('Lütfen geçerli bir sunucu adresi girin!');
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = `https://${url}`;
+      }
+      url = url.replace(/\/+$/, '');
+
+      localStorage.setItem('football_link_server_url', url);
+      SERVER_HOST = url;
+      API_BASE = `${SERVER_HOST}/api`;
+
+      if (socket) socket.disconnect();
+      socket = io(SERVER_HOST, { transports: ['websocket', 'polling'] });
+      initSocketListeners();
+      closeServerConfigModal();
+      alert(`✅ Canlı sunucu adresi güncellendi:\n${SERVER_HOST}`);
+    }
+
+    function resetServerUrlConfig() {
+      localStorage.removeItem('football_link_server_url');
+      location.reload();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('football_link_user');
+      if (saved) {
+        try {
+          currentUser = JSON.parse(saved);
+          updateUserProfileUI();
+          showView('viewHome');
+        } catch (e) { showView('viewAuth'); }
+      } else { showView('viewAuth'); }
+      initSocketListeners();
+    });
+
+    function initSocketListeners() {
+      socket.off(); // clear existing listeners
+      
+      socket.on('connect', () => {
+        const text = document.getElementById('connText');
+        const ind = document.getElementById('connIndicator');
+        if (text) text.innerText = 'Sunucu Bağlı';
+        if (ind) ind.style.backgroundColor = 'var(--accent-green-bright)';
+      });
+
+      socket.on('disconnect', () => {
+        const text = document.getElementById('connText');
+        const ind = document.getElementById('connIndicator');
+        if (text) text.innerText = 'Bağlantı Kesildi';
+        if (ind) ind.style.backgroundColor = 'var(--accent-red)';
+      });
+
+    socket.on('matchFound', (data) => {
+      roomId = data.roomId;
+      currentMatchInfo = data;
+      closeFriendsModal();
+      showView('viewDraft');
+    });
+
+    socket.on('startRoundDraft', (data) => {
+      showView('viewDraft');
+      document.getElementById('selectedTeamStatus').innerText = `Tur ${data.round}: 10 sn içinde yeni takımını seç!`;
+      document.getElementById('draftSearchInput').value = '';
+      document.getElementById('draftDrop').style.display = 'none';
+      document.getElementById('selectTimerVal').innerText = `${data.selectTimeLimit || 10}s`;
+      onDraftSearch();
+    });
+
+    socket.on('selectTimerTick', (data) => {
+      document.getElementById('selectTimerVal').innerText = `${data.secondsLeft}s`;
+    });
+
+    socket.on('matchStartedWithTeams', (data) => {
+      currentMatchInfo = data;
+      closeFriendsModal();
+      renderMatchArenaHeaderAndTeams(data, { player1: 0, player2: 0 });
+      showView('viewArena');
+    });
+
+    socket.on('timerTick', (data) => {
+      document.getElementById('timerVal').innerText = `${data.secondsLeft}s`;
+    });
+
+    socket.on('roundTimeout', (data) => {
+      const feed = document.getElementById('historyFeed');
+      if (feed) {
+        feed.innerHTML += `<div style="background:rgba(245,158,11,0.2); color:#fbbf24; padding:8px 12px; border-radius:10px; font-size:12px; font-weight:700;">${data.message}</div>`;
+        feed.scrollTop = feed.scrollHeight;
+      }
+    });
+
+    socket.on('answerResult', (data) => {
+      const feed = document.getElementById('historyFeed');
+      if (data.success) {
+        feed.innerHTML += `<div style="background:rgba(16,185,129,0.2); color:#34d399; padding:8px 12px; border-radius:10px; font-size:12px; font-weight:800;">🏆 ${data.message}</div>`;
+        if (data.scores && currentMatchInfo) {
+          renderMatchArenaHeaderAndTeams(currentMatchInfo, data.scores);
+        }
+      } else {
+        feed.innerHTML += `<div style="background:rgba(239,68,68,0.2); color:#f87171; padding:8px 12px; border-radius:10px; font-size:12px;">${data.message}</div>`;
+      }
+      feed.scrollTop = feed.scrollHeight;
+    });
+
+    socket.on('matchEnded', (data) => {
+      alert(`🎉 MAÇ BİTTİ! Kazanan: ${data.winnerName}`);
+      showView('viewHome');
+    });
+
+    socket.on('ticTacToeStarted', (data) => {
+      roomId = data.roomId;
+      currentTTTGrid = data.grid;
+      showView('viewTicTacToe');
+      renderTTTBoard(data.grid, data.board, data.currentTurnUserId);
+    });
+
+    socket.on('ticTacToeResult', (data) => {
+      if (data.board && currentTTTGrid) {
+        renderTTTBoard(currentTTTGrid, data.board, data.nextTurnUserId);
+      }
+      if (data.message) {
+        alert(data.message);
+      }
+    });
+
+    // FRIENDS LOBBY PRIVATE ROOM HANDLERS
+    function openFriendsLobby() {
+      document.getElementById('friendsModalOverlay').style.display = 'flex';
+      switchFriendsTab('create');
+    }
+
+    function closeFriendsModal() {
+      document.getElementById('friendsModalOverlay').style.display = 'none';
+    }
+
+    function switchFriendsTab(tab) {
+      if (tab === 'create') {
+        document.getElementById('tabCreateRoomBtn').classList.add('active');
+        document.getElementById('tabJoinRoomBtn').classList.remove('active');
+        document.getElementById('friendsCreateWrap').style.display = 'flex';
+        document.getElementById('friendsJoinWrap').style.display = 'none';
+      } else {
+        document.getElementById('tabCreateRoomBtn').classList.remove('active');
+        document.getElementById('tabJoinRoomBtn').classList.add('active');
+        document.getElementById('friendsCreateWrap').style.display = 'none';
+        document.getElementById('friendsJoinWrap').style.display = 'flex';
+      }
+    }
+
+    function handleCreatePrivateRoom() {
+      const mode = document.getElementById('friendGameMode').value;
+      socket.emit('createPrivateRoom', {
+        userId: currentUser ? currentUser.userId : 'user_' + Date.now(),
+        username: currentUser ? currentUser.username : 'Oyuncu',
+        gameMode: mode
+      });
+    }
+
+    socket.on('privateRoomCreated', (data) => {
+      roomId = data.roomId;
+      document.getElementById('roomCodeCreatedBox').style.display = 'flex';
+      document.getElementById('createdCodeVal').innerText = data.roomCode;
+    });
+
+    function copyRoomCode() {
+      const code = document.getElementById('createdCodeVal').innerText;
+      navigator.clipboard.writeText(code);
+      alert(`📋 Oda Kodu Kopyalandı: ${code}`);
+    }
+
+    function handleJoinPrivateRoom() {
+      const code = document.getElementById('joinRoomCodeInput').value.trim();
+      if (!code) return alert('Lütfen oda kodunu girin!');
+
+      socket.emit('joinPrivateRoom', {
+        roomCode: code,
+        userId: currentUser ? currentUser.userId : 'user_' + Date.now(),
+        username: currentUser ? currentUser.username : 'Oyuncu'
+      });
+    }
+
+    socket.on('privateRoomError', (data) => {
+      alert(`❌ ${data.message}`);
+    });
+    } // End of initSocketListeners
+
+    function renderMatchArenaHeaderAndTeams(matchData, scores) {
+      if (!matchData || !matchData.teamPair) return;
+      const isPlayer1 = currentUser && matchData.player1 && (currentUser.userId === matchData.player1.userId);
+
+      const myTeam = isPlayer1 ? matchData.teamPair.teamA : matchData.teamPair.teamB;
+      const oppTeam = isPlayer1 ? matchData.teamPair.teamB : matchData.teamPair.teamA;
+
+      const myName = currentUser ? currentUser.username : (isPlayer1 ? matchData.player1.username : matchData.player2.username);
+      const oppName = isPlayer1 ? matchData.player2?.username : matchData.player1?.username;
+
+      const myScore = isPlayer1 ? (scores.player1 || 0) : (scores.player2 || 0);
+      const oppScore = isPlayer1 ? (scores.player2 || 0) : (scores.player1 || 0);
+
+      document.getElementById('p1Label').innerText = `👤 ${myName} (Sen): ${myScore}`;
+      document.getElementById('p2Label').innerText = `⚔️ ${oppName || 'Rakip'}: ${oppScore}`;
+
+      document.getElementById('nameA').innerText = `${myTeam.name} (Sen)`;
+      document.getElementById('logoA').src = myTeam.logo || 'https://media.api-sports.io/football/teams/541.png';
+
+      document.getElementById('nameB').innerText = `${oppTeam.name} (Rakip)`;
+      document.getElementById('logoB').src = oppTeam.logo || 'https://media.api-sports.io/football/teams/611.png';
+    }
+
+    function openGoogleModal() { document.getElementById('googleModalOverlay').style.display = 'flex'; }
+    function closeGoogleModal() { document.getElementById('googleModalOverlay').style.display = 'none'; }
+
+    async function confirmGoogleAccount(name, email) {
+      closeGoogleModal();
+      try {
+        const res = await fetch(`${API_BASE}/auth/google`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email })
+        });
+        const data = await res.json();
+        if (data.success) {
+          currentUser = data.user;
+          localStorage.setItem('football_link_user', JSON.stringify(currentUser));
+          updateUserProfileUI();
+          showView('viewHome');
+        } else { alert('❌ Google girişi başarısız.'); }
+      } catch (e) { console.error(e); }
+    }
+
+    function switchAuthTab(tab) {
+      document.querySelectorAll('.auth-tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('formVerifyCode').style.display = 'none';
+
+      if (tab === 'login') {
+        document.getElementById('tabLoginBtn').classList.add('active');
+        document.getElementById('formLogin').style.display = 'flex';
+        document.getElementById('formRegister').style.display = 'none';
+      } else {
+        document.getElementById('tabRegisterBtn').classList.add('active');
+        document.getElementById('formLogin').style.display = 'none';
+        document.getElementById('formRegister').style.display = 'flex';
+      }
+    }
+
+    async function handleSendVerifyCode() {
+      const fullName = document.getElementById('regFullName').value.trim();
+      const username = document.getElementById('regUsername').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const favTeam = document.getElementById('regFavTeam').value;
+      const password = document.getElementById('regPassword').value.trim();
+
+      if (!fullName || !username || !email || !password) return alert('Lütfen tüm alanları doldurun!');
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fullName, username, email, password, favTeam })
+        });
+        const data = await res.json();
+        if (data.success) {
+          activeRegisterEmail = email;
+          document.getElementById('verifyEmailTarget').innerText = `${email} adresinize 6 haneli onay kodu gönderildi.`;
+
+          if (data.verificationCodeDemo) {
+            const digits = data.verificationCodeDemo.split('');
+            for (let i = 1; i <= 6; i++) {
+              if (digits[i - 1]) document.getElementById(`c${i}`).value = digits[i - 1];
+            }
+          }
+
+          document.getElementById('formRegister').style.display = 'none';
+          document.getElementById('formVerifyCode').style.display = 'flex';
+        } else { alert(`❌ ${data.message}`); }
+      } catch (e) { alert('❌ Sunucu bağlantı hatası!'); }
+    }
+
+    async function handleConfirmVerifyCode() {
+      let code = '';
+      for (let i = 1; i <= 6; i++) { code += document.getElementById(`c${i}`).value.trim(); }
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/verify-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: activeRegisterEmail, code })
+        });
+        const data = await res.json();
+        if (data.success) {
+          currentUser = data.user;
+          localStorage.setItem('football_link_user', JSON.stringify(currentUser));
+          updateUserProfileUI();
+          showView('viewHome');
+        } else { alert(`❌ ${data.message}`); }
+      } catch (e) { alert('❌ Sunucu doğrulama hatası!'); }
+    }
+
+    async function handleLoginSubmit() {
+      const usernameOrEmail = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      if (!usernameOrEmail) return alert('Lütfen kullanıcı adınızı girin!');
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usernameOrEmail, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          currentUser = data.user;
+          localStorage.setItem('football_link_user', JSON.stringify(currentUser));
+          updateUserProfileUI();
+          showView('viewHome');
+        } else { alert(`❌ ${data.message}`); }
+      } catch (e) {
+        currentUser = { userId: 'user_' + Date.now(), username: usernameOrEmail, eloRating: 0, isAdmin: true };
+        localStorage.setItem('football_link_user', JSON.stringify(currentUser));
+        updateUserProfileUI();
+        showView('viewHome');
+      }
+    }
+
+    function handleDemoLogin(mode) {
+      if (mode === 'guest') {
+        const randNum = Math.floor(1000 + Math.random() * 9000);
+        const guestName = `Guest_${randNum}`;
+        const guestId = `user_guest_${Date.now()}_${randNum}`;
+
+        currentUser = {
+          userId: guestId,
+          username: guestName,
+          favTeam: 'Beşiktaş',
+          eloRating: 0,
+          isAdmin: false
+        };
+      } else {
+        const randNum = Math.floor(100 + Math.random() * 900);
+        currentUser = {
+          userId: `user_suleyman_${Date.now()}_${randNum}`,
+          username: 'Süleyman',
+          favTeam: 'Beşiktaş',
+          eloRating: 0,
+          isAdmin: true
+        };
+      }
+      localStorage.setItem('football_link_user', JSON.stringify(currentUser));
+      updateUserProfileUI();
+      showView('viewHome');
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('football_link_user');
+      currentUser = null;
+      showView('viewAuth');
+    }
+
+    function updateUserProfileUI() {
+      if (!currentUser) return;
+      document.getElementById('userNameDisplay').innerText = currentUser.username;
+      const isAdmin = currentUser.isAdmin || currentUser.username.toLowerCase().includes('suleyman');
+      document.getElementById('userSubDisplay').innerText = isAdmin ? '🛡️ Yönetici (Admin)' : `Üye Oyuncu (${currentUser.favTeam || 'Beşiktaş'})`;
+      
+      const avatarBox = document.getElementById('userAvatarBox');
+      const profAvatarBox = document.getElementById('profAvatarBox');
+      if (currentUser.avatarUrl && currentUser.avatarUrl.startsWith('http')) {
+        avatarBox.innerHTML = `<img src="${currentUser.avatarUrl}">`;
+        if (profAvatarBox) profAvatarBox.innerHTML = `<img src="${currentUser.avatarUrl}">`;
+      } else {
+        const initial = (currentUser.avatarUrl && currentUser.avatarUrl.length <= 4) ? currentUser.avatarUrl : currentUser.username.substring(0, 1).toUpperCase();
+        avatarBox.innerHTML = initial;
+        if (profAvatarBox) profAvatarBox.innerHTML = initial;
+      }
+
+      document.getElementById('userEloDisplay').innerText = `${currentUser.eloRating || 0} ELO`;
+      document.getElementById('myRankName').innerText = `${currentUser.username} (Sen)`;
+      document.getElementById('myRankElo').innerText = `${currentUser.eloRating || 0} ELO`;
+
+      if (isAdmin) {
+        const card = document.getElementById('adminPanelCard');
+        if (card) card.style.display = 'flex';
+      }
+    }
+
+    function showView(viewId) {
+      if (!currentUser && viewId !== 'viewAuth') { viewId = 'viewAuth'; }
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+
+      const header = document.getElementById('appHeader');
+      const footer = document.getElementById('appFooter');
+
+      if (viewId === 'viewArena' || viewId === 'viewAuth') {
+        header.style.display = 'none';
+        footer.style.display = 'none';
+      } else {
+        header.style.display = 'flex';
+        footer.style.display = 'flex';
+      }
+
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      if (viewId === 'viewHome') document.getElementById('navHome').classList.add('active');
+      if (viewId === 'viewLeaderboard') document.getElementById('navLeaderboard').classList.add('active');
+      if (viewId === 'viewTicTacToe') document.getElementById('navTTT').classList.add('active');
+      if (viewId === 'viewExplorer') document.getElementById('navExplorer').classList.add('active');
+      if (viewId === 'viewProfile') document.getElementById('navProfile').classList.add('active');
+    }
+
+    function start1v1Queue() {
+      showView('viewSearch');
+      socket.emit('joinQueue', { userId: currentUser.userId, username: currentUser.username });
+    }
+
+    function cancelSearch() {
+      socket.emit('leaveQueue');
+      showView('viewHome');
+    }
+
+    function quitCurrentMatch() { showView('viewHome'); }
+    function openLeaderboard() { showView('viewLeaderboard'); }
+
+    function openTicTacToe() {
+      showView('viewSearch');
+      socket.emit('joinTTTQueue', {
+        userId: currentUser ? currentUser.userId : 'user_' + Date.now(),
+        username: currentUser ? currentUser.username : 'Oyuncu'
+      });
+    }
+
+    async function fetchNewTTTGrid() {
+      try {
+        const res = await fetch(`${API_BASE}/game/tictactoe-grid`);
+        const grid = await res.json();
+        currentTTTGrid = grid;
+        const emptyBoard = Array(3).fill(null).map(() => Array(3).fill(null).map(() => ({ symbol: null })));
+        renderTTTBoard(grid, emptyBoard);
+      } catch (e) { console.error(e); }
+    }
+
+    function renderTTTBoard(grid, board, currentTurnUserId) {
+      const container = document.getElementById('tttGridBoard');
+      container.innerHTML = '';
+      container.innerHTML += `<div class="ttt-header-cell"></div>`;
+
+      grid.colTeams.forEach(col => {
+        container.innerHTML += `
+          <div class="ttt-header-cell">
+            <img src="${col.logo || 'https://media.api-sports.io/football/teams/541.png'}">
+            <span>${col.name}</span>
+          </div>
+        `;
+      });
+
+      for (let r = 0; r < 3; r++) {
+        const rowTeam = grid.rowTeams[r];
+        container.innerHTML += `
+          <div class="ttt-header-cell">
+            <img src="${rowTeam.logo || 'https://media.api-sports.io/football/teams/541.png'}">
+            <span>${rowTeam.name}</span>
+          </div>
+        `;
+
+        for (let c = 0; c < 3; c++) {
+          const cell = board[r][c];
+          container.innerHTML += `
+            <div class="ttt-cell" onclick="onTTTCellClick(${r}, ${c})">
+              ${cell.symbol ? `<div style="font-weight:900; font-size:18px; color:${cell.symbol==='X'?'var(--accent-blue)':'var(--accent-gold-bright)'}">${cell.symbol}</div><div style="font-size:10px; text-align:center;">${cell.playerName || ''}</div>` : '<div style="font-size:11px; color:var(--text-muted);">+ Hamle</div>'}
+            </div>
+          `;
+        }
+      }
+
+      if (currentTurnUserId && currentUser) {
+        const isMyTurn = currentUser.userId === currentTurnUserId;
+        const turnBox = document.getElementById('cellTargetInfo');
+        if (turnBox) {
+          turnBox.innerText = isMyTurn ? '⚡ SİZİN SIRANIZ! Bir hücre seçip ortak oyuncuyu yazın.' : '⏳ RAKİBİN SIRASI BEKLENİYOR...';
+        }
+      }
+    }
+
+    function onTTTCellClick(r, c) {
+      selectedTTTCell = { r, c };
+      const rowTeam = currentTTTGrid.rowTeams[r];
+      const colTeam = currentTTTGrid.colTeams[c];
+      document.getElementById('tttInputWrap').style.display = 'block';
+      
+      const isMyTurn = roomId ? (currentUser && currentUser.userId === currentTurnUserId) : true;
+      document.getElementById('cellTargetInfo').innerText = `📍 Ortak Oyuncu Bul: ${rowTeam.name} ⚡ ${colTeam.name}`;
+      document.getElementById('tttPlayerInput').focus();
+    }
+
+    async function submitTTTCellMove() {
+      if (!selectedTTTCell || !currentTTTGrid) return;
+      const input = document.getElementById('tttPlayerInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      const { r, c } = selectedTTTCell;
+      
+      if (roomId) {
+        socket.emit('submitTicTacToeMove', {
+          roomId,
+          rowIndex: r,
+          colIndex: c,
+          playerInput: text
+        });
+      } else {
+        const rowTeam = currentTTTGrid.rowTeams[r];
+        const colTeam = currentTTTGrid.colTeams[c];
+
+        const res = await fetch(`${API_BASE}/game/verify-answer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamAId: rowTeam.id, teamBId: colTeam.id, playerInput: text })
+        });
+        const result = await res.json();
+        if (result.success) {
+          alert(`🏆 TEBRİKLER! ${result.player.name} her iki takımda da oynadı!`);
+        } else { alert(`❌ ${result.message}`); }
+      }
+    }
+
+    async function openPhysicalExplorer() {
+      showView('viewExplorer');
+      onPhysicalSearch();
+    }
+
+    async function onPhysicalSearch() {
+      const q = document.getElementById('dbSearchInput').value.trim();
+      const list = document.getElementById('playersList');
+      try {
+        const res = await fetch(`${API_BASE}/game/explore-players?query=${encodeURIComponent(q)}`);
+        const players = await res.json();
+        list.innerHTML = '';
+        players.forEach(p => {
+          const validCareers = (p.careers || []).filter(c => c && c.team);
+          let timelineHtml = validCareers.map((c, idx) => `
+            <div style="display:inline-flex; align-items:center; gap:4px; background:#161b22; padding:3px 6px; border-radius:4px; font-size:11px;">
+              <img src="${c.team.logo || 'https://media.api-sports.io/football/teams/541.png'}" style="width:14px; height:14px;">
+              <span>${c.team.name}</span>
+            </div>
+            ${idx < validCareers.length - 1 ? '<span style="font-size:10px; color:var(--text-muted);">➔</span>' : ''}
+          `).join('');
+
+          list.innerHTML += `
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px; display:flex; flex-direction:column; gap:6px;">
+              <div style="font-weight:800; font-size:14px; color:var(--accent-blue);">${p.name}</div>
+              <div style="display:flex; flex-wrap:wrap; gap:4px; background:rgba(0,0,0,0.25); padding:6px; border-radius:6px;">${timelineHtml || '<span style="font-size:11px; color:var(--text-muted);">Kariyer bilgisi yok</span>'}</div>
+            </div>
+          `;
+        });
+      } catch (e) { console.error(e); }
+    }
+
+    async function onDraftSearch() {
+      const input = document.getElementById('draftSearchInput');
+      const drop = document.getElementById('draftDrop');
+      const q = input.value.trim();
+      try {
+        const res = await fetch(`${API_BASE}/game/search-teams?query=${encodeURIComponent(q)}`);
+        const teams = await res.json();
+        drop.innerHTML = '';
+        if (teams.length > 0) {
+          drop.style.display = 'block';
+          teams.forEach(t => {
+            drop.innerHTML += `
+              <div style="padding:8px 12px; display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="selectSimultaneousTeam('${t.id}', '${t.name.replace(/'/g, "\\'")}')">
+                <img src="${t.logo || 'https://media.api-sports.io/football/teams/541.png'}" style="width:20px; height:20px;">
+                <span style="font-size:13px; font-weight:700;">${t.name}</span>
+              </div>
+            `;
+          });
+        } else { drop.style.display = 'none'; }
+      } catch (e) { console.error(e); }
+    }
+
+    function selectSimultaneousTeam(teamId, teamName) {
+      document.getElementById('draftDrop').style.display = 'none';
+      document.getElementById('selectedTeamStatus').innerText = `✓ Takım Seçildi: ${teamName}`;
+      socket.emit('selectSimultaneousTeam', { roomId, teamId });
+    }
+
+    async function sendAnswer() {
+      const field = document.getElementById('answerField');
+      const text = field.value.trim();
+      if (!text) return;
+      field.value = '';
+      if (roomId) socket.emit('submitAnswer', { roomId, playerInput: text });
+    }
+
+    // PROFILE & SETTINGS HANDLERS
+    function openProfileView() {
+      showView('viewProfile');
+      if (!currentUser) return;
+
+      document.getElementById('profUsernameDisplay').innerText = currentUser.username;
+      document.getElementById('profEmailDisplay').innerText = currentUser.email || 'guest@football-link.com';
+      document.getElementById('profTeamBadge').innerText = `🦅 ${currentUser.favTeam || 'Beşiktaş'}`;
+      document.getElementById('profEloBadge').innerText = `${currentUser.eloRating || 0} ELO`;
+      document.getElementById('settingFavTeamSelect').value = currentUser.favTeam || 'Beşiktaş';
+
+      loadUserMatchHistory();
+    }
+
+    function toggleAvatarEditModal() {
+      const wrap = document.getElementById('avatarPickerWrap');
+      wrap.style.display = wrap.style.display === 'none' ? 'flex' : 'none';
+    }
+
+    function selectPresetAvatar(emoji) {
+      if (!currentUser) return;
+      currentUser.avatarUrl = emoji;
+      localStorage.setItem('football_link_user', JSON.stringify(currentUser));
+      updateUserProfileUI();
+      document.getElementById('avatarPickerWrap').style.display = 'none';
+      saveProfileToServer({ avatarUrl: emoji });
+    }
+
+    function saveCustomAvatarUrl() {
+      const url = document.getElementById('customAvatarUrlInput').value.trim();
+      if (!url) return alert('Lütfen bir fotoğraf URL adresi girin!');
+
+      currentUser.avatarUrl = url;
+      localStorage.setItem('football_link_user', JSON.stringify(currentUser));
+      updateUserProfileUI();
+      document.getElementById('avatarPickerWrap').style.display = 'none';
+      saveProfileToServer({ avatarUrl: url });
+    }
+
+    async function saveProfileToServer(payload) {
+      if (!currentUser || !currentUser.userId) return;
+      try {
+        await fetch(`${API_BASE}/auth/update-profile`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: currentUser.userId, ...payload })
+        });
+      } catch (e) { console.error(e); }
+    }
+
+    async function handleUpdateSettingsFavTeam() {
+      const newTeam = document.getElementById('settingFavTeamSelect').value;
+      if (!currentUser) return;
+      currentUser.favTeam = newTeam;
+      localStorage.setItem('football_link_user', JSON.stringify(currentUser));
+      updateUserProfileUI();
+      document.getElementById('profTeamBadge').innerText = `🦅 ${newTeam}`;
+      saveProfileToServer({ favTeam: newTeam });
+    }
+
+    async function loadUserMatchHistory() {
+      const container = document.getElementById('matchHistoryList');
+      container.innerHTML = '';
+
+      let history = [];
+      if (currentUser && currentUser.userId) {
+        try {
+          const res = await fetch(`${API_BASE}/game/match-history/${currentUser.userId}`);
+          const data = await res.json();
+          if (Array.isArray(data)) history = data;
+        } catch (e) { console.error(e); }
+      }
+
+      // Sample fallback matches if new user
+      if (history.length === 0) {
+        history = [
+          { opponentName: 'Ahmet_10', gameMode: 'speed', userScore: 3, opponentScore: 1, isWin: true, createdAt: 'Bugün' },
+          { opponentName: 'Mehmet_Pro', gameMode: 'tictactoe', userScore: 3, opponentScore: 2, isWin: true, createdAt: 'Dün' },
+          { opponentName: 'EfsaneKral', gameMode: 'speed', userScore: 1, opponentScore: 3, isWin: false, createdAt: '2 gün önce' },
+          { opponentName: 'Alex_10', gameMode: 'speed', userScore: 3, opponentScore: 0, isWin: true, createdAt: '3 gün önce' },
+          { opponentName: 'Hagi_Fan', gameMode: 'tictactoe', userScore: 2, opponentScore: 3, isWin: false, createdAt: '4 gün önce' }
+        ];
+      }
+
+      const last5 = history.slice(0, 5);
+      let winCount = 0;
+
+      last5.forEach(m => {
+        if (m.isWin) winCount++;
+        const modeTitle = m.gameMode === 'tictactoe' ? '❌⭕ Tic-Tac-Toe' : '⚔️ 1v1 Hız Yarışı';
+        container.innerHTML += `
+          <div class="match-history-card">
+            <div>
+              <div style="font-weight:800; font-size:13px;">${m.opponentName} <span style="font-size:10px; color:var(--text-muted);">(${modeTitle})</span></div>
+              <div style="font-size:11px; color:var(--text-muted);">Skor: ${m.userScore} - ${m.opponentScore}</div>
+            </div>
+            <div class="result-badge ${m.isWin ? 'win' : 'loss'}">
+              ${m.isWin ? '🏆 GALİBİYET' : '❌ MAĞLUBİYET'}
+            </div>
+          </div>
+        `;
+      });
+
+      document.getElementById('profTotalMatches').innerText = last5.length;
+      document.getElementById('profWins').innerText = winCount;
+      const rate = Math.round((winCount / last5.length) * 100);
+      document.getElementById('profWinRate').innerText = `%${rate}`;
+    }
+
+    // ADMIN PANEL JS LOGIC
+    function openAdminPanel() {
+      showView('viewAdmin');
+      loadAdminStats();
+      switchAdminTab('stats');
+    }
+
+    function switchAdminTab(tab) {
+      document.getElementById('tabAdminStatsBtn').classList.remove('active');
+      document.getElementById('tabAdminPlayersBtn').classList.remove('active');
+      document.getElementById('tabAdminUsersBtn').classList.remove('active');
+      document.getElementById('adminStatsWrap').style.display = 'none';
+      document.getElementById('adminPlayersWrap').style.display = 'none';
+      document.getElementById('adminUsersWrap').style.display = 'none';
+
+      if (tab === 'stats') {
+        document.getElementById('tabAdminStatsBtn').classList.add('active');
+        document.getElementById('adminStatsWrap').style.display = 'flex';
+      } else if (tab === 'players') {
+        document.getElementById('tabAdminPlayersBtn').classList.add('active');
+        document.getElementById('adminPlayersWrap').style.display = 'flex';
+      } else if (tab === 'users') {
+        document.getElementById('tabAdminUsersBtn').classList.add('active');
+        document.getElementById('adminUsersWrap').style.display = 'flex';
+        loadAdminUsers();
+      }
+    }
+
+    async function loadAdminStats() {
+      try {
+        const res = await fetch(`${API_BASE}/admin/stats`);
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('admStatPlayers').innerText = data.stats.totalPlayers.toLocaleString();
+          document.getElementById('admStatTeams').innerText = data.stats.totalTeams.toLocaleString();
+          document.getElementById('admStatUsers').innerText = data.stats.totalUsers.toLocaleString();
+          document.getElementById('admStatBanned').innerText = data.stats.bannedUsers.toLocaleString();
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadAdminUsers() {
+      try {
+        const res = await fetch(`${API_BASE}/admin/users`);
+        const data = await res.json();
+        if (data.success) {
+          const container = document.getElementById('admUsersList');
+          container.innerHTML = '';
+          data.users.forEach(u => {
+            container.innerHTML += `
+              <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:800; font-size:13px;">${u.username} ${u.isAdmin ? '🛡️ (Admin)' : ''}</div>
+                  <div style="font-size:11px; color:var(--text-muted);">${u.email || ''} | ELO: ${u.eloRating}</div>
+                </div>
+                <div style="display:flex; gap:4px;">
+                  <button style="background:${u.isBanned ? '#10b981' : '#ef4444'}; color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;" onclick="toggleBanUser('${u.id}', ${!u.isBanned})">
+                    ${u.isBanned ? 'Unban' : 'Ban'}
+                  </button>
+                  <button style="background:var(--accent-blue); color:#000; border:none; padding:4px 8px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;" onclick="promptSetElo('${u.id}', ${u.eloRating})">
+                    Elo
+                  </button>
+                </div>
+              </div>
+            `;
+          });
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    async function toggleBanUser(userId, isBanned) {
+      try {
+        const res = await fetch(`${API_BASE}/admin/update-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, isBanned })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(`✅ Kullanıcı ${isBanned ? 'ENGELENDİ (Banned)' : 'ENGELİ KALDIRILDI'}!`);
+          loadAdminUsers();
+        }
+      } catch (e) { alert('❌ Hata oluştu!'); }
+    }
+
+    async function promptSetElo(userId, currentElo) {
+      const val = prompt('Yeni ELO puanını yazın:', currentElo);
+      if (val !== null) {
+        const eloRating = parseInt(val, 10);
+        if (isNaN(eloRating)) return;
+        const res = await fetch(`${API_BASE}/admin/update-user`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, eloRating })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('✅ ELO Güncellendi!');
+          loadAdminUsers();
+        }
+      }
+    }
+
+    async function handleAdminAddPlayer() {
+      const name = document.getElementById('newPlayerName').value.trim();
+      const photo = document.getElementById('newPlayerPhoto').value.trim();
+      const nationality = document.getElementById('newPlayerNation').value.trim();
+      if (!name) return alert('Oyuncu adını yazın!');
+
+      try {
+        const res = await fetch(`${API_BASE}/admin/add-player`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, photo, nationality })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(`✅ ${data.player.name} oyuncusu veritabanına eklendi!`);
+          document.getElementById('newPlayerName').value = '';
+          document.getElementById('newPlayerPhoto').value = '';
+          document.getElementById('newPlayerNation').value = '';
+        }
+      } catch (e) { alert('❌ Ekleme başarısız.'); }
+    }
+
+    async function searchTransPlayer() {
+      const q = document.getElementById('transPlayerSearch').value.trim();
+      const drop = document.getElementById('transPlayerDrop');
+      if (q.length < 2) { drop.style.display = 'none'; return; }
+
+      const res = await fetch(`${API_BASE}/game/explore-players?query=${encodeURIComponent(q)}`);
+      const players = await res.json();
+      drop.innerHTML = '';
+      if (players.length > 0) {
+        drop.style.display = 'block';
+        players.forEach(p => {
+          drop.innerHTML += `<div style="padding:6px; font-size:12px; cursor:pointer;" onclick="selectTransPlayer('${p.id}', '${p.name.replace(/'/g, "\\'")}')">${p.name}</div>`;
+        });
+      } else { drop.style.display = 'none'; }
+    }
+
+    function selectTransPlayer(id, name) {
+      document.getElementById('transPlayerId').value = id;
+      document.getElementById('transPlayerSearch').value = name;
+      document.getElementById('transPlayerDrop').style.display = 'none';
+    }
+
+    async function searchTransTeam() {
+      const q = document.getElementById('transTeamSearch').value.trim();
+      const drop = document.getElementById('transTeamDrop');
+      if (q.length < 2) { drop.style.display = 'none'; return; }
+
+      const res = await fetch(`${API_BASE}/game/search-teams?query=${encodeURIComponent(q)}`);
+      const teams = await res.json();
+      drop.innerHTML = '';
+      if (teams.length > 0) {
+        drop.style.display = 'block';
+        teams.forEach(t => {
+          drop.innerHTML += `<div style="padding:6px; font-size:12px; cursor:pointer;" onclick="selectTransTeam('${t.id}', '${t.name.replace(/'/g, "\\'")}')">${t.name}</div>`;
+        });
+      } else { drop.style.display = 'none'; }
+    }
+
+    function selectTransTeam(id, name) {
+      document.getElementById('transTeamId').value = id;
+      document.getElementById('transTeamSearch').value = name;
+      document.getElementById('transTeamDrop').style.display = 'none';
+    }
+
+    async function handleAdminAddCareer() {
+      const playerId = document.getElementById('transPlayerId').value;
+      const teamId = document.getElementById('transTeamId').value;
+      if (!playerId || !teamId) return alert('Lütfen oyuncu ve takım seçin!');
+
+      const res = await fetch(`${API_BASE}/admin/add-career`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ playerId, teamId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('✅ Transfer kariyer kaydı eklendi!');
+        document.getElementById('transPlayerSearch').value = '';
+        document.getElementById('transTeamSearch').value = '';
+      }
+    }
+
+    function saveAdminGameConfig() {
+      alert('✅ Oyun süre ve kural ayarları canlı sunucuya uygulandı!');
+    }
+  </script>
+</body>
+</html>

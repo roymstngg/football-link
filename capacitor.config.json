@@ -1,0 +1,9 @@
+{
+  "appId": "com.futboll.link",
+  "appName": "Football Link",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "cleartext": true
+  }
+}

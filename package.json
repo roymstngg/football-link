@@ -1,0 +1,19 @@
+{
+  "name": "football-link-mobile",
+  "version": "1.0.0",
+  "description": "Football Link Multiplayer Android Application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "cap:init": "cap init",
+    "cap:add": "cap add android",
+    "cap:sync": "cap sync"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.4"
+  }
+}
