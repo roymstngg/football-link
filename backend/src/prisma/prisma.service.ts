@@ -9,7 +9,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     super({
       datasources: {
         db: {
-          url: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/football_link?schema=public',
+          url: process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_Zd61kgmUnvJa@ep-winter-union-ax0ybbso.c-4.us-east-2.aws.neon.tech/neondb?sslmode=require',
         },
       },
     });
