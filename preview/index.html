@@ -1269,31 +1269,33 @@
     }
 
     function handleDemoLogin(mode) {
-      if (mode === 'guest') {
-        const randNum = Math.floor(1000 + Math.random() * 9000);
-        const guestName = `Guest_${randNum}`;
-        const guestId = `user_guest_${Date.now()}_${randNum}`;
-
-        currentUser = {
-          userId: guestId,
-          username: guestName,
-          favTeam: 'Beşiktaş',
-          eloRating: 0,
-          isAdmin: false
-        };
-      } else {
-        const randNum = Math.floor(100 + Math.random() * 900);
-        currentUser = {
-          userId: `user_suleyman_${Date.now()}_${randNum}`,
-          username: 'Süleyman',
-          favTeam: 'Beşiktaş',
-          eloRating: 0,
-          isAdmin: true
-        };
+      try {
+        if (mode === 'guest') {
+          const randNum = Math.floor(1000 + Math.random() * 9000);
+          currentUser = {
+            userId: `user_guest_${Date.now()}_${randNum}`,
+            username: `Guest_${randNum}`,
+            favTeam: 'Beşiktaş',
+            eloRating: 0,
+            isAdmin: false
+          };
+        } else {
+          const randNum = Math.floor(100 + Math.random() * 900);
+          currentUser = {
+            userId: `user_suleyman_${Date.now()}_${randNum}`,
+            username: 'Süleyman',
+            favTeam: 'Beşiktaş',
+            eloRating: 0,
+            isAdmin: true
+          };
+        }
+        localStorage.setItem('football_link_user', JSON.stringify(currentUser));
+        updateUserProfileUI();
+        showView('viewHome');
+      } catch (err) {
+        console.error('Demo login error:', err);
+        showView('viewHome');
       }
-      localStorage.setItem('football_link_user', JSON.stringify(currentUser));
-      updateUserProfileUI();
-      showView('viewHome');
     }
 
     function handleLogout() {
@@ -1304,25 +1306,39 @@
 
     function updateUserProfileUI() {
       if (!currentUser) return;
-      document.getElementById('userNameDisplay').innerText = currentUser.username;
-      const isAdmin = currentUser.isAdmin || currentUser.username.toLowerCase().includes('suleyman');
-      document.getElementById('userSubDisplay').innerText = isAdmin ? '🛡️ Yönetici (Admin)' : `Üye Oyuncu (${currentUser.favTeam || 'Beşiktaş'})`;
       
-      const avatarBox = document.getElementById('userAvatarBox');
+      const nameElem = document.getElementById('usernameDisplay') || document.getElementById('userNameDisplay');
+      if (nameElem) nameElem.innerText = currentUser.username;
+      
+      const favElem = document.getElementById('favTeamDisplay') || document.getElementById('userSubDisplay');
+      if (favElem) {
+        const isAdmin = currentUser.isAdmin || (currentUser.username && currentUser.username.toLowerCase().includes('suleyman'));
+        favElem.innerText = currentUser.favTeam ? `🦅 ${currentUser.favTeam}` : (isAdmin ? '🛡️ Yönetici (Admin)' : 'Üye Oyuncu');
+      }
+      
+      const avatarBox = document.getElementById('userAvatar') || document.getElementById('userAvatarBox');
       const profAvatarBox = document.getElementById('profAvatarBox');
-      if (currentUser.avatarUrl && currentUser.avatarUrl.startsWith('http')) {
-        avatarBox.innerHTML = `<img src="${currentUser.avatarUrl}">`;
-        if (profAvatarBox) profAvatarBox.innerHTML = `<img src="${currentUser.avatarUrl}">`;
-      } else {
-        const initial = (currentUser.avatarUrl && currentUser.avatarUrl.length <= 4) ? currentUser.avatarUrl : currentUser.username.substring(0, 1).toUpperCase();
-        avatarBox.innerHTML = initial;
-        if (profAvatarBox) profAvatarBox.innerHTML = initial;
+      if (avatarBox) {
+        if (currentUser.avatarUrl && currentUser.avatarUrl.startsWith('http')) {
+          avatarBox.innerHTML = `<img src="${currentUser.avatarUrl}">`;
+          if (profAvatarBox) profAvatarBox.innerHTML = `<img src="${currentUser.avatarUrl}">`;
+        } else {
+          const initial = (currentUser.avatarUrl && currentUser.avatarUrl.length <= 4) ? currentUser.avatarUrl : currentUser.username.substring(0, 1).toUpperCase();
+          avatarBox.innerHTML = initial;
+          if (profAvatarBox) profAvatarBox.innerHTML = initial;
+        }
       }
 
-      document.getElementById('userEloDisplay').innerText = `${currentUser.eloRating || 0} ELO`;
-      document.getElementById('myRankName').innerText = `${currentUser.username} (Sen)`;
-      document.getElementById('myRankElo').innerText = `${currentUser.eloRating || 0} ELO`;
+      const eloElem = document.getElementById('userEloDisplay');
+      if (eloElem) eloElem.innerText = `${currentUser.eloRating || 0} ELO`;
+      
+      const myRankName = document.getElementById('myRankName');
+      if (myRankName) myRankName.innerText = `${currentUser.username} (Sen)`;
+      
+      const myRankElo = document.getElementById('myRankElo');
+      if (myRankElo) myRankElo.innerText = `${currentUser.eloRating || 0} ELO`;
 
+      const isAdmin = currentUser.isAdmin || (currentUser.username && currentUser.username.toLowerCase().includes('suleyman'));
       if (isAdmin) {
         const card = document.getElementById('adminPanelCard');
         if (card) card.style.display = 'flex';
@@ -1332,26 +1348,31 @@
     function showView(viewId) {
       if (!currentUser && viewId !== 'viewAuth') { viewId = 'viewAuth'; }
       document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.getElementById(viewId).classList.add('active');
+      const targetView = document.getElementById(viewId);
+      if (targetView) targetView.classList.add('active');
 
       const header = document.getElementById('appHeader');
       const footer = document.getElementById('appFooter');
 
-      if (viewId === 'viewArena' || viewId === 'viewAuth') {
-        header.style.display = 'none';
-        footer.style.display = 'none';
-      } else {
-        header.style.display = 'flex';
-        footer.style.display = 'flex';
-      }
+      if (header) header.style.display = (viewId === 'viewArena' || viewId === 'viewAuth') ? 'none' : 'flex';
+      if (footer) footer.style.display = (viewId === 'viewArena' || viewId === 'viewAuth') ? 'none' : 'flex';
 
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      if (viewId === 'viewHome') document.getElementById('navHome').classList.add('active');
-      if (viewId === 'viewLeaderboard') document.getElementById('navLeaderboard').classList.add('active');
-      if (viewId === 'viewTicTacToe') document.getElementById('navTTT').classList.add('active');
-      if (viewId === 'viewExplorer') document.getElementById('navExplorer').classList.add('active');
-      if (viewId === 'viewProfile') document.getElementById('navProfile').classList.add('active');
+      const navHome = document.getElementById('navHome');
+      if (navHome && viewId === 'viewHome') navHome.classList.add('active');
+      const navLeaderboard = document.getElementById('navLeaderboard');
+      if (navLeaderboard && viewId === 'viewLeaderboard') navLeaderboard.classList.add('active');
+      const navTTT = document.getElementById('navTTT');
+      if (navTTT && viewId === 'viewTicTacToe') navTTT.classList.add('active');
+      const navExplorer = document.getElementById('navExplorer');
+      if (navExplorer && viewId === 'viewExplorer') navExplorer.classList.add('active');
+      const navProfile = document.getElementById('navProfile');
+      if (navProfile && viewId === 'viewProfile') navProfile.classList.add('active');
     }
+
+    function openProfileView() { showView('viewProfile'); }
+    function openProfileModal() { showView('viewProfile'); }
+    function openPhysicalExplorer() { showView('viewExplorer'); }
 
     function start1v1Queue() {
       showView('viewSearch');
