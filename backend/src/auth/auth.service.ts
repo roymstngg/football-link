@@ -118,29 +118,54 @@ export class AuthService {
     };
   }
 
-  // REAL GOOGLE OAUTH ENDPOINT: Creates/Logins user via Google profile in PostgreSQL DB
-  async googleAuth(data: { email: string; name: string; googleId?: string }) {
+  // REAL GOOGLE OAUTH ENDPOINT: Verifies Google ID Token or Google Profile, saves to PostgreSQL
+  async googleAuth(data: { idToken?: string; email?: string; name?: string; googleId?: string }) {
+    let email = data.email;
+    let name = data.name;
+    let googleId = data.googleId;
+    let avatarUrl = '';
+
+    if (data.idToken) {
+      try {
+        const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${data.idToken}`);
+        const googleUser = await response.json();
+        if (googleUser && googleUser.email) {
+          email = googleUser.email;
+          name = googleUser.name || googleUser.given_name || email.split('@')[0];
+          googleId = googleUser.sub;
+          avatarUrl = googleUser.picture || '';
+        }
+      } catch (err) {
+        this.logger.error('Google token verification error:', err);
+      }
+    }
+
+    if (!email) {
+      throw new BadRequestException('Google girişi için e-posta adresi alınamadı!');
+    }
+
     let user = await this.prisma.user.findUnique({
-      where: { email: data.email },
+      where: { email: email },
     });
 
     if (!user) {
-      const username = data.name.replace(/\s+/g, '_').toLowerCase() + '_' + Math.floor(Math.random() * 1000);
+      const username = (name || email.split('@')[0]).replace(/\s+/g, '_').toLowerCase() + '_' + Math.floor(Math.random() * 1000);
       user = await this.prisma.user.create({
         data: {
-          fullName: data.name,
+          fullName: name || email.split('@')[0],
           username: username,
-          email: data.email,
-          googleId: data.googleId || 'google_' + Date.now(),
+          email: email,
+          googleId: googleId || 'google_' + Date.now(),
           favTeam: 'Beşiktaş',
+          avatarUrl: avatarUrl || undefined,
           eloRating: 0, // INITIAL ELO STARTS AT 0
           isVerified: true,
-          isAdmin: data.email.includes('suleyman'),
+          isAdmin: email.includes('suleyman'),
         },
       });
-      this.logger.log(`🌐 NEW GOOGLE USER CREATED IN POSTGRESQL: ${user.username}`);
+      this.logger.log(`🌐 NEW REAL GOOGLE USER CREATED IN POSTGRESQL: ${user.username} (${user.email})`);
     } else {
-      this.logger.log(`🌐 GOOGLE USER LOGGED IN FROM POSTGRESQL: ${user.username}`);
+      this.logger.log(`🌐 REAL GOOGLE USER LOGGED IN FROM POSTGRESQL: ${user.username} (${user.email})`);
     }
 
     if (user.isBanned) {
