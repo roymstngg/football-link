@@ -268,8 +268,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       scorePlayer1: 0,
       scorePlayer2: 0,
       phase: 'selecting_teams',
-      selectTimerSeconds: 10,
-      roundTimerSeconds: 10,
+      selectTimerSeconds: 20,
+      roundTimerSeconds: 30,
       round: 1,
       maxRounds: 5,
       usedPlayersInRoom: new Set(),
@@ -289,8 +289,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       player1: { userId: p1.userId, username: p1.username, avatar: p1.avatar },
       player2: { userId: p2.userId, username: p2.username, avatar: p2.avatar },
       phase: 'selecting_teams',
-      selectTimeLimit: 10,
-      message: '10 saniyeniz var! İki oyuncu da aynı anda takımını seçiyor...',
+      selectTimeLimit: 20,
+      message: '20 saniyeniz var! İki oyuncu da aynı anda takımını seçiyor...',
     });
 
     this.startDraftTimerForRoom(room);
@@ -303,13 +303,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     room.phase = 'selecting_teams';
     room.teamA = undefined;
     room.teamB = undefined;
-    room.selectTimerSeconds = 10;
+    room.selectTimerSeconds = 20;
 
     this.server.to(room.id).emit('startRoundDraft', {
       round: room.round,
       targetScore: 3,
-      selectTimeLimit: 10,
-      message: `🔔 Tur ${room.round} başladı! 10 saniyeniz var, yeni takımınızı seçin!`,
+      selectTimeLimit: 20,
+      message: `🔔 Tur ${room.round} başladı! 20 saniyeniz var, yeni takımınızı seçin!`,
     });
 
     room.selectTimerInterval = setInterval(async () => {
@@ -371,18 +371,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       teamPair: pairInfo,
       player1: { userId: room.player1.userId, username: room.player1.username },
       player2: { userId: room.player2!.userId, username: room.player2!.username },
-      roundTimeLimit: 10,
+      roundTimeLimit: 30,
       targetScore: 3,
       round: room.round,
       message: `Tur ${room.round} Hız Yarışı! 🎯 ${room.teamA.name} ⚡ ${room.teamB.name} - İlk bilen puanı kapar!`,
     });
 
-    this.start10sRoundTimer(room);
+    this.start30sRoundTimer(room);
   }
 
-  private start10sRoundTimer(room: MatchRoom) {
+  private start30sRoundTimer(room: MatchRoom) {
     if (room.roundTimerInterval) clearInterval(room.roundTimerInterval);
-    room.roundTimerSeconds = 10;
+    room.roundTimerSeconds = 30;
 
     room.roundTimerInterval = setInterval(async () => {
       room.roundTimerSeconds--;
@@ -390,14 +390,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (room.roundTimerSeconds <= 0) {
         clearInterval(room.roundTimerInterval!);
-        await this.handle10sRoundTimeout(room);
+        await this.handle30sRoundTimeout(room);
       }
     }, 1000);
   }
 
-  private async handle10sRoundTimeout(room: MatchRoom) {
+  private async handle30sRoundTimeout(room: MatchRoom) {
     this.server.to(room.id).emit('roundTimeout', {
-      message: `⏰ 10 saniye doldu! Bilen çıkmadı. Tur ${room.round} bitti! Yeni tur seçimi başlıyor...`,
+      message: `⏰ 30 saniye doldu! Bilen çıkmadı. Tur ${room.round} bitti! Yeni tur seçimi başlıyor...`,
       round: room.round,
     });
 

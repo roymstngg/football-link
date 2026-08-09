@@ -538,57 +538,107 @@
         </div>
       </div>
 
-      <!-- 4. DRAFT PHASE VIEW -->
+      <!-- 4. REDESIGNED DRAFT PHASE VIEW -->
       <div class="view" id="viewDraft">
-        <div style="background: var(--bg-card); border: 1px solid var(--border-accent); border-radius: var(--radius-xl); padding: 20px; text-align: center; display: flex; flex-direction: column; gap: 14px;">
-          <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; color: var(--accent-blue);">
-            <span>TUR İÇİN TAKIMINI SEÇ</span>
-            <span style="background: var(--accent-blue); color: #000; font-weight: 900; padding: 2px 10px; border-radius: 14px;" id="selectTimerVal">10s</span>
+        <div style="background: linear-gradient(135deg, rgba(19, 27, 46, 0.95), rgba(28, 39, 64, 0.95)); border: 1px solid var(--border-accent); border-radius: var(--radius-xl); padding: 18px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+            <div>
+              <div style="font-size: 15px; font-weight: 900; color: var(--accent-blue);">🛡️ TUR İÇİN TAKIMINI SEÇ</div>
+              <div style="font-size: 11px; color: var(--text-muted);">Ortak oyuncu bulmak istediğin takımı seç veya ara</div>
+            </div>
+            <div style="background: linear-gradient(135deg, var(--accent-gold), #d97706); color: #000; font-weight: 900; font-size: 14px; padding: 6px 14px; border-radius: 20px; box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);" id="selectTimerVal">20s</div>
           </div>
 
+          <!-- POPULAR TEAMS QUICK SELECT PILLS -->
+          <div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">⚡ HIZLI SEÇİM (POPÜLER KULÜPLER):</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <div class="btn-secondary" style="width:auto; padding: 6px 10px; font-size: 11px; font-weight: 700; display:flex; align-items:center; gap:6px;" onclick="quickSelectDraftTeam('Galatasaray')">
+                <img src="https://media.api-sports.io/football/teams/645.png" style="width:16px; height:16px;"> Galatasaray
+              </div>
+              <div class="btn-secondary" style="width:auto; padding: 6px 10px; font-size: 11px; font-weight: 700; display:flex; align-items:center; gap:6px;" onclick="quickSelectDraftTeam('Fenerbahce')">
+                <img src="https://media.api-sports.io/football/teams/611.png" style="width:16px; height:16px;"> Fenerbahçe
+              </div>
+              <div class="btn-secondary" style="width:auto; padding: 6px 10px; font-size: 11px; font-weight: 700; display:flex; align-items:center; gap:6px;" onclick="quickSelectDraftTeam('Besiktas')">
+                <img src="https://media.api-sports.io/football/teams/541.png" style="width:16px; height:16px;"> Beşiktaş
+              </div>
+              <div class="btn-secondary" style="width:auto; padding: 6px 10px; font-size: 11px; font-weight: 700; display:flex; align-items:center; gap:6px;" onclick="quickSelectDraftTeam('Real Madrid')">
+                <img src="https://media.api-sports.io/football/teams/541.png" style="width:16px; height:16px;"> Real Madrid
+              </div>
+              <div class="btn-secondary" style="width:auto; padding: 6px 10px; font-size: 11px; font-weight: 700; display:flex; align-items:center; gap:6px;" onclick="quickSelectDraftTeam('FC Barcelona')">
+                <img src="https://media.api-sports.io/football/teams/529.png" style="width:16px; height:16px;"> Barcelona
+              </div>
+              <div class="btn-secondary" style="width:auto; padding: 6px 10px; font-size: 11px; font-weight: 700; display:flex; align-items:center; gap:6px;" onclick="quickSelectDraftTeam('Manchester City')">
+                <img src="https://media.api-sports.io/football/teams/50.png" style="width:16px; height:16px;"> Man City
+              </div>
+            </div>
+          </div>
+
+          <!-- SEARCH INPUT BAR -->
           <div style="position: relative; width:100%;">
-            <input type="text" id="draftSearchInput" class="input-box" placeholder="Takım ismi yaz (örn: Beşiktaş, Real, Barca)..." oninput="onDraftSearch()">
-            <div id="draftDrop" style="position:absolute; top:100%; left:0; right:0; background:#192238; border:1px solid var(--border-color); border-radius:var(--radius-md); max-height:160px; overflow-y:auto; z-index:100; display:none;"></div>
+            <input type="text" id="draftSearchInput" class="input-box" placeholder="Veya diğer takımları yazıp ara (Örn: Napoli, PSG, Milan)..." oninput="onDraftSearch()">
+            <div id="draftDrop" style="position:absolute; top:100%; left:0; right:0; background:#192238; border:1px solid var(--border-accent); border-radius:var(--radius-md); max-height:180px; overflow-y:auto; z-index:100; display:none; box-shadow: 0 10px 25px rgba(0,0,0,0.8);"></div>
           </div>
 
-          <div id="selectedTeamStatus" style="font-size: 13px; font-weight: 700; color: var(--accent-green-bright); min-height: 20px;"></div>
+          <!-- DUAL LOCK-IN STATUS CARDS -->
+          <div style="display: flex; gap: 8px;">
+            <div style="flex:1; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 10px; text-align: center;">
+              <div style="font-size: 10px; color: var(--text-muted); font-weight: 700;">SENİN SEÇİMİN:</div>
+              <div id="myTeamLockStatus" style="font-size: 12px; font-weight: 800; color: var(--accent-gold); margin-top: 2px;">Henüz Seçilmedi</div>
+            </div>
+            <div style="flex:1; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 10px; text-align: center;">
+              <div style="font-size: 10px; color: var(--text-muted); font-weight: 700;">RAKİBİN SEÇİMİ:</div>
+              <div id="oppTeamLockStatus" style="font-size: 12px; font-weight: 800; color: var(--text-muted); margin-top: 2px;">Seçim Bekleniyor...</div>
+            </div>
+          </div>
+
+          <div id="selectedTeamStatus" style="font-size: 12px; font-weight: 800; text-align: center; color: var(--accent-green-bright); min-height: 18px;"></div>
         </div>
       </div>
 
-      <!-- 5. PURE FOCUS MATCH ARENA VIEW -->
+      <!-- 5. STADIUM OVERHAUL 1v1 MATCH ARENA VIEW -->
       <div class="view" id="viewArena">
         <div class="arena-focus-container">
-          <div class="arena-header-bar">
-            <div id="p1Label" style="font-weight: 800; font-size: 14px; color: var(--text-main);">Oyuncu (0)</div>
-            <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: var(--accent-gold); font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 12px;">🎯 HEDEF: 3 PUAN</div>
-            <div id="p2Label" style="font-weight: 800; font-size: 14px; color: var(--text-main);">Rakip (0)</div>
-          </div>
-
-          <div class="matchup-card">
-            <div class="team-badge">
-              <img id="logoA" src="https://media.api-sports.io/football/teams/541.png">
-              <div id="nameA" style="font-weight:800; font-size:13px; text-align:center;">Takım A</div>
+          <!-- GLASSMORPHIC SCOREBOARD HEADER -->
+          <div class="arena-header-bar" style="background: linear-gradient(135deg, rgba(19, 27, 46, 0.95), rgba(15, 23, 42, 0.95)); border-color: var(--border-accent);">
+            <div id="p1Label" style="font-weight: 900; font-size: 14px; color: var(--accent-blue); display:flex; align-items:center; gap:6px;">
+              <span>👤 Sen: 0</span>
             </div>
-            <div class="vs-circle">VS</div>
-            <div class="team-badge">
-              <img id="logoB" src="https://media.api-sports.io/football/teams/611.png">
-              <div id="nameB" style="font-weight:800; font-size:13px; text-align:center;">Takım B</div>
+            <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.2)); border: 1px solid var(--accent-gold); color: var(--accent-gold-bright); font-size: 11px; font-weight: 900; padding: 4px 12px; border-radius: 14px; box-shadow: 0 0 10px rgba(245,158,11,0.2);">🎯 HEDEF: 3 PUAN</div>
+            <div id="p2Label" style="font-weight: 900; font-size: 14px; color: var(--accent-green-bright); display:flex; align-items:center; gap:6px;">
+              <span>⚔️ Rakip: 0</span>
             </div>
           </div>
 
-          <div class="timer-focus-box">
-            <span style="font-size: 12px; font-weight: 800; color: var(--accent-gold);" id="turnText">⚡ Ortak Oyuncuyu İLK SEN YAZ!</span>
-            <div class="timer-ring" id="timerVal">10s</div>
+          <!-- MATCHUP STADIUM CARD -->
+          <div class="matchup-card" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.98)); border: 1.5px solid var(--border-accent); box-shadow: 0 8px 30px rgba(0,0,0,0.6);">
+            <div class="team-badge">
+              <img id="logoA" src="https://media.api-sports.io/football/teams/541.png" style="width: 58px; height: 58px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));">
+              <div id="nameA" style="font-weight: 900; font-size: 14px; text-align: center; color: #ffffff;">Takım A</div>
+            </div>
+            <div class="vs-circle" style="width: 44px; height: 44px; font-size: 15px; font-weight: 900; box-shadow: 0 0 15px var(--accent-blue);">VS</div>
+            <div class="team-badge">
+              <img id="logoB" src="https://media.api-sports.io/football/teams/611.png" style="width: 58px; height: 58px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));">
+              <div id="nameB" style="font-weight: 900; font-size: 14px; text-align: center; color: #ffffff;">Takım B</div>
+            </div>
           </div>
 
-          <div class="feed-container" id="historyFeed"></div>
+          <!-- 30 SECONDS TIMING RING -->
+          <div class="timer-focus-box" style="background: rgba(15, 23, 42, 0.9); border-color: var(--border-color);">
+            <span style="font-size: 12px; font-weight: 800; color: var(--accent-gold-bright);" id="turnText">⚡ Her iki takımda oynayan futbolcuyu yaz!</span>
+            <div class="timer-ring" id="timerVal" style="font-size: 22px; font-weight: 900; color: var(--accent-gold-bright); border-color: var(--accent-gold); background: rgba(245, 158, 11, 0.15);">30s</div>
+          </div>
 
+          <!-- LIVE ANSWER FEED -->
+          <div class="feed-container" id="historyFeed" style="min-height: 200px; background: rgba(7, 10, 20, 0.95); border-color: var(--border-color);"></div>
+
+          <!-- INPUT BAR -->
           <div style="display: flex; gap: 8px; width:100%;">
-            <input type="text" id="answerField" class="input-box" placeholder="Ortak oyuncu adını gir..." onkeypress="if(event.key==='Enter')sendAnswer()">
-            <button class="btn-primary" style="width: auto; padding: 0 20px;" onclick="sendAnswer()">Gönder</button>
+            <input type="text" id="answerField" class="input-box" placeholder="Futbolcu adını gir (Örn: Ronaldo, Hagi, Icardi)..." style="font-size: 14px; padding: 14px;" onkeypress="if(event.key==='Enter')sendAnswer()">
+            <button class="btn-primary" style="width: auto; padding: 0 24px; font-size: 15px; font-weight: 900;" onclick="sendAnswer()">Gönder</button>
           </div>
 
-          <button style="background:none; border:none; color:var(--text-muted); font-size:11px; cursor:pointer; align-self:center;" onclick="quitCurrentMatch()">✕ Maçtan Çık</button>
+          <button style="background:none; border:none; color:var(--text-muted); font-size:11px; font-weight:700; cursor:pointer; align-self:center;" onclick="quitCurrentMatch()">✕ Maçtan Çık</button>
         </div>
       </div>
 
