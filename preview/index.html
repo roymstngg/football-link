@@ -357,6 +357,146 @@
       cursor: pointer;
     }
 
+    /* ANIMATED RADAR SCANNER FOR SEARCH VIEW */
+    .radar-container {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 8px auto;
+    }
+
+    .radar-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(16, 185, 129, 0.3);
+      box-sizing: border-box;
+    }
+
+    .radar-ring-1 { width: 140px; height: 140px; animation: pulse-ring 2.2s infinite ease-out; }
+    .radar-ring-2 { width: 100px; height: 100px; animation: pulse-ring 2.2s infinite ease-out 0.7s; }
+    .radar-ring-3 { width: 60px; height: 60px; border-color: rgba(16, 185, 129, 0.6); }
+
+    .radar-sweep {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(16, 185, 129, 0.45) 360deg);
+      animation: spin-sweep 2.2s linear infinite;
+    }
+
+    .radar-center-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #10B981, #059669);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #000;
+      box-shadow: 0 0 24px rgba(16, 185, 129, 0.7);
+      z-index: 5;
+    }
+
+    @keyframes spin-sweep {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.7); opacity: 0.9; }
+      100% { transform: scale(1.2); opacity: 0; }
+    }
+
+    .animated-glow-text {
+      animation: text-glow 2s ease-in-out infinite;
+    }
+
+    @keyframes text-glow {
+      0%, 100% { opacity: 1; text-shadow: 0 0 12px rgba(16, 185, 129, 0.8); }
+      50% { opacity: 0.65; text-shadow: 0 0 2px rgba(16, 185, 129, 0.2); }
+    }
+
+    /* EXPLORER FUT CARDS DESIGN */
+    .explorer-card {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-card-secondary));
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: all 0.25s ease;
+    }
+
+    .explorer-card:hover {
+      border-color: var(--accent-green);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.15);
+    }
+
+    .explorer-card-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .explorer-avatar-box {
+      width: 50px;
+      height: 50px;
+      background: var(--bg-active);
+      border: 2px solid var(--accent-green);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .explorer-player-name {
+      font-weight: 900;
+      font-size: 15px;
+      color: var(--text-main);
+    }
+
+    .explorer-team-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent-green);
+      margin-top: 3px;
+    }
+
+    .explorer-card-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .explorer-ovr-tag {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      font-weight: 900;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    .explorer-nation-tag {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
     .team-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -451,17 +591,6 @@
       font-weight: 900;
       color: var(--accent-green);
     }
-
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid var(--border-color);
-      border-top: 4px solid var(--accent-green);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -687,19 +816,26 @@
         </div>
       </div>
 
-      <!-- 3. REDESIGNED SEARCHING MATCH VIEW -->
+      <!-- 3. ULTRA ANIMATED RADAR MATCH SEARCH VIEW -->
       <div class="view" id="viewSearch">
-        <div class="auth-form-card" style="margin: auto; text-align: center; align-items: center; padding: 28px 16px; gap: 20px;">
-          <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 100px; height: 100px;">
-            <div class="loading-spinner" style="width: 90px; height: 90px; border-width: 4px; position: absolute;"></div>
-            <div style="width: 60px; height: 60px; background: var(--bg-active); border: 2px solid var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px;">⚔️</div>
+        <div class="auth-form-card" style="margin: auto; text-align: center; align-items: center; padding: 28px 16px; gap: 18px;">
+          
+          <!-- ANIMATED SONAR RADAR BEAM -->
+          <div class="radar-container">
+            <div class="radar-ring radar-ring-1"></div>
+            <div class="radar-ring radar-ring-2"></div>
+            <div class="radar-ring radar-ring-3"></div>
+            <div class="radar-sweep"></div>
+            <div class="radar-center-icon">⚔️</div>
           </div>
+
           <div>
-            <div style="font-size: 18px; font-weight: 900; color: var(--accent-green); letter-spacing: -0.3px;">⚡ CANLI RAKİP ARANIYOR...</div>
-            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">1v1 Futbol Bilgi Arenası • Dengeli ELO Eşleşmesi</div>
-            <div style="display: inline-block; background: var(--bg-card-secondary); border: 1px solid var(--border-color); color: var(--accent-warning); font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 12px; margin-top: 8px;">🎯 2.400 - 2.500 ELO Aralığı</div>
+            <div class="animated-glow-text" style="font-size: 18px; font-weight: 900; color: var(--accent-green); letter-spacing: -0.3px;">⚡ CANLI RAKİP ARANIYOR...</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">1v1 Futbol Arenası • Dengeli ELO Eşleşmesi</div>
+            <div style="display: inline-block; background: var(--bg-card-secondary); border: 1px solid var(--border-color); color: var(--accent-warning); font-size: 11px; font-weight: 800; padding: 5px 14px; border-radius: 14px; margin-top: 10px;">🎯 2.400 - 2.500 ELO Aralığı Taraftarı</div>
           </div>
-          <button class="btn-secondary" style="width: 100%; border-color: rgba(239, 68, 68, 0.4); color: var(--accent-danger);" onclick="cancelSearch()">✕ Aramayı İptal Et</button>
+
+          <button class="btn-secondary" style="width: 100%; border-color: rgba(239, 68, 68, 0.4); color: var(--accent-danger); font-weight: 800;" onclick="cancelSearch()">✕ Aramayı İptal Et</button>
         </div>
       </div>
 
@@ -815,14 +951,14 @@
         </div>
       </div>
 
-      <!-- 7. EXPLORER VIEW (FIXED WITH DEFAULT STAR PLAYERS) -->
+      <!-- 7. ULTRA HIGH-FIDELITY CAREER EXPLORER VIEW -->
       <div class="view" id="viewExplorer">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="font-weight: 900; font-size: 16px; color: var(--text-main);">📖 KARİYER İNCELEYİCİ</div>
+          <div style="font-weight: 900; font-size: 16px; color: var(--text-main);">📖 KARİYER & TRANSFER İNCELEYİCİ</div>
           <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; width:auto;" onclick="showView('viewHome')">Geri</button>
         </div>
-        <input type="text" id="dbSearchInput" class="input-box" placeholder="Futbolcu adı yaz (örn: Osimhen, Hagi, Zidane)..." oninput="onPhysicalSearch()">
-        <div id="playersList" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
+        <input type="text" id="dbSearchInput" class="input-box" placeholder="Futbolcu veya takım ara (örn: Osimhen, Real Madrid, Hagi)..." oninput="onPhysicalSearch()">
+        <div id="playersList" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px;"></div>
       </div>
 
       <!-- 8. FRIENDS / PRIVATE ROOM VIEW -->
@@ -923,15 +1059,15 @@
     let currentTTTGrid = null;
 
     const defaultPlayers = [
-      { name: 'Victor Osimhen', nationality: 'Nigeria / Galatasaray' },
-      { name: 'Mauro Icardi', nationality: 'Argentina / Galatasaray' },
-      { name: 'Gheorghe Hagi', nationality: 'Romania / Galatasaray' },
-      { name: 'Cristiano Ronaldo', nationality: 'Portugal / Al Nassr' },
-      { name: 'Lionel Messi', nationality: 'Argentina / Inter Miami' },
-      { name: 'Zinedine Zidane', nationality: 'France / Real Madrid' },
-      { name: 'Kylian Mbappé', nationality: 'France / Real Madrid' },
-      { name: 'Jude Bellingham', nationality: 'England / Real Madrid' },
-      { name: 'Lamine Yamal', nationality: 'Spain / FC Barcelona' }
+      { name: 'Victor Osimhen', team: 'Galatasaray S.K.', logo: '🦁', nation: '🇳🇬 Nijerya', pos: 'ST', ovr: '89 OVR' },
+      { name: 'Mauro Icardi', team: 'Galatasaray S.K.', logo: '🦁', nation: '🇦🇷 Arjantin', pos: 'ST', ovr: '87 OVR' },
+      { name: 'Gheorghe Hagi', team: 'Efsane / Galatasaray', logo: '👑', nation: '🇷🇴 Romanya', pos: 'CAM', ovr: '93 OVR' },
+      { name: 'Cristiano Ronaldo', team: 'Al-Nassr FC', logo: '🟡', nation: '🇵🇹 Portekiz', pos: 'ST', ovr: '91 OVR' },
+      { name: 'Lionel Messi', team: 'Inter Miami CF', logo: '💗', nation: '🇦🇷 Arjantin', pos: 'RW', ovr: '92 OVR' },
+      { name: 'Zinedine Zidane', team: 'Efsane / Real Madrid', logo: '👑', nation: '🇫🇷 Fransa', pos: 'CM', ovr: '95 OVR' },
+      { name: 'Kylian Mbappé', team: 'Real Madrid C.F.', logo: '⚪', nation: '🇫🇷 Fransa', pos: 'ST', ovr: '92 OVR' },
+      { name: 'Jude Bellingham', team: 'Real Madrid C.F.', logo: '⚪', nation: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 İngiltere', pos: 'CAM', ovr: '90 OVR' },
+      { name: 'Lamine Yamal', team: 'FC Barcelona', logo: '🔵🔴', nation: '🇪🇸 İspanya', pos: 'RW', ovr: '86 OVR' }
     ];
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -1235,13 +1371,21 @@
         const res = await fetch(`${API_BASE}/game/explore-players?query=${encodeURIComponent(q)}`);
         const players = await res.json();
         if (players && players.length > 0) {
-          renderExplorerPlayers(players);
+          const mapped = players.map(p => ({
+            name: p.name,
+            team: p.currentTeam || 'Takımsız / Serbest',
+            logo: '⚽',
+            nation: p.nationality || 'Futbolcu',
+            pos: p.position || 'ST',
+            ovr: '88 OVR'
+          }));
+          renderExplorerPlayers(mapped);
         } else {
-          const filtered = defaultPlayers.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
-          renderExplorerPlayers(filtered.length > 0 ? filtered : [{ name: q, nationality: 'Futbolcu' }]);
+          const filtered = defaultPlayers.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || p.team.toLowerCase().includes(q.toLowerCase()));
+          renderExplorerPlayers(filtered.length > 0 ? filtered : [{ name: q, team: 'Özel Futbolcu', logo: '⚽', nation: 'Sporcu', pos: 'ST', ovr: '85 OVR' }]);
         }
       } catch (e) {
-        const filtered = defaultPlayers.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
+        const filtered = defaultPlayers.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || p.team.toLowerCase().includes(q.toLowerCase()));
         renderExplorerPlayers(filtered.length > 0 ? filtered : defaultPlayers);
       }
     }
@@ -1252,9 +1396,21 @@
       list.innerHTML = '';
       players.forEach(p => {
         list.innerHTML += `
-          <div style="background:var(--bg-card-secondary); border: 1px solid var(--border-color); padding:12px 14px; border-radius:var(--radius-lg); display:flex; justify-content:space-between; align-items:center;">
-            <div style="font-weight: 800; font-size: 14px; color: var(--text-main);">⚽ ${p.name}</div>
-            <div style="font-size: 11px; font-weight: 700; color: var(--accent-green);">${p.nationality || 'Futbolcu'}</div>
+          <div class="explorer-card">
+            <div class="explorer-card-left">
+              <div class="explorer-avatar-box">${p.logo || '⚽'}</div>
+              <div>
+                <div class="explorer-player-name">${p.name}</div>
+                <div class="explorer-team-badge">
+                  <span>🛡️</span>
+                  <span>${p.team || 'Takımsız'}</span>
+                </div>
+              </div>
+            </div>
+            <div class="explorer-card-right">
+              <div class="explorer-ovr-tag">${p.pos || 'ST'} • ${p.ovr || '88 OVR'}</div>
+              <div class="explorer-nation-tag">${p.nation || 'Futbolcu'}</div>
+            </div>
           </div>
         `;
       });
