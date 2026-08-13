@@ -139,6 +139,7 @@
       display: flex;
       flex-direction: column;
       position: relative;
+      gap: 12px;
     }
 
     .view {
@@ -289,7 +290,7 @@
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-xl);
-      padding: 14px 16px;
+      padding: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -354,27 +355,6 @@
       margin-top: -18px;
       border: 3px solid var(--bg-footer);
       cursor: pointer;
-    }
-
-    .ticker-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-xl);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .ticker-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--bg-card-secondary);
-      padding: 8px 12px;
-      border-radius: var(--radius-md);
-      font-size: 12px;
-      font-weight: 700;
     }
 
     .team-grid {
@@ -531,12 +511,10 @@
             <label class="form-label">Kullanıcı Adı veya E-posta</label>
             <input type="text" id="loginUsername" class="input-box" placeholder="Kullanıcı adını yaz..." value="Süleyman">
           </div>
-
           <div class="form-group">
             <label class="form-label">Şifre</label>
             <input type="password" id="loginPassword" class="input-box" placeholder="••••••••" value="123456">
           </div>
-
           <button type="button" class="btn-primary" onclick="handleLoginSubmit()">GİRİŞ YAP ⚽</button>
           <button type="button" class="btn-secondary" style="font-size:11px; color: var(--accent-warning); border-color: rgba(245,158,11,0.3);" onclick="handleDemoLogin('admin')">🛡️ Süleyman Admin Girişi</button>
         </div>
@@ -593,126 +571,85 @@
 
       <!-- 1. DASHBOARD HOME VIEW -->
       <div class="view" id="viewHome">
-        <div class="auth-form-card" style="flex-direction: row; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer;" onclick="openProfileModal()">
+        <div class="auth-form-card" style="flex-direction: row; align-items: center; justify-content: space-between; padding: 14px; cursor: pointer;" onclick="openProfileModal()">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 42px; height: 42px; background: var(--bg-active); border: 2px solid var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--accent-green);" id="userAvatar">S</div>
+            <div style="width: 44px; height: 44px; background: var(--bg-active); border: 2px solid var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--accent-green);" id="userAvatar">S</div>
             <div>
-              <div style="font-weight: 900; font-size: 15px; color: var(--text-main);" id="usernameDisplay">FootballLinker</div>
+              <div style="font-weight: 900; font-size: 16px; color: var(--text-main);" id="usernameDisplay">Süleyman</div>
               <div style="font-size: 11px; font-weight: 700; color: var(--accent-green);" id="favTeamDisplay">🦅 Beşiktaş J.K.</div>
             </div>
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); font-weight: 900; font-size: 12px; padding: 4px 10px; border-radius: 12px;" id="userEloDisplay">2.450 ELO ↗</div>
-            <button style="background:none; border:none; color:var(--accent-danger); font-size:16px; cursor:pointer;" onclick="event.stopPropagation(); handleLogout();">🚪</button>
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); font-weight: 900; font-size: 13px; padding: 4px 12px; border-radius: 14px;" id="userEloDisplay">2.450 ELO ↗</div>
+            <button style="background:none; border:none; color:var(--accent-danger); font-size:18px; cursor:pointer;" onclick="event.stopPropagation(); handleLogout();">🚪</button>
           </div>
         </div>
 
-        <div class="ticker-card">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-size: 11px; font-weight: 800; color: var(--accent-green); display: flex; align-items: center; gap: 6px;">
-              <div class="status-indicator"></div> CANLI MAÇLAR
-            </div>
-            <span style="font-size: 10px; color: var(--text-muted); cursor: pointer;">Tümünü Gör</span>
-          </div>
-          <div class="ticker-row">
-            <span>Man City</span>
-            <span style="color: var(--accent-green);">2 - 1 (67')</span>
-            <span>Arsenal</span>
-          </div>
-          <div class="ticker-row">
-            <span>Real Madrid</span>
-            <span style="color: var(--accent-green);">1 - 0 (45')</span>
-            <span>Barcelona</span>
-          </div>
-          <div class="ticker-row">
-            <span>Liverpool</span>
-            <span style="color: var(--accent-green);">3 - 2 (90')</span>
-            <span>Tottenham</span>
-          </div>
-        </div>
-
-        <div class="ticker-card">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-size: 11px; font-weight: 800; color: var(--text-secondary);">📅 YAKLAŞAN MAÇLAR</div>
-            <span style="font-size: 10px; color: var(--text-muted);">Tümünü Gör</span>
-          </div>
-          <div class="ticker-row">
-            <span>Bayern Münih</span>
-            <span style="color: var(--accent-warning);">14:30</span>
-            <span>Dortmund</span>
-          </div>
-          <div class="ticker-row">
-            <span>Galatasaray</span>
-            <span style="color: var(--accent-warning);">20:00</span>
-            <span>Fenerbahçe</span>
-          </div>
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 4px;">
           <div class="btn-card" id="adminPanelCard" style="display: none; border-color: var(--accent-warning);" onclick="openAdminPanel()">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 40px; height: 40px; background: rgba(245, 158, 11, 0.15); border-radius: 10px; display:flex; align-items:center; justify-content:center; font-size: 20px;">🛡️</div>
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 44px; height: 44px; background: rgba(245, 158, 11, 0.15); border-radius: 12px; display:flex; align-items:center; justify-content:center; font-size: 22px;">🛡️</div>
               <div>
-                <div style="font-weight: 900; font-size: 14px; color: var(--accent-warning);">ADMIN YÖNETİM PANELİ</div>
+                <div style="font-weight: 900; font-size: 15px; color: var(--accent-warning);">ADMİN YÖNETİM PANELİ</div>
                 <div style="font-size: 11px; color: var(--text-muted);">Veritabanı, Üye & Oyun Ayarları</div>
               </div>
             </div>
-            <span style="color: var(--accent-warning); font-weight: 900;">➔</span>
+            <span style="color: var(--accent-warning); font-weight: 900; font-size: 18px;">➔</span>
           </div>
 
           <div class="btn-card" style="border-color: var(--accent-green); background: var(--bg-active);" onclick="start1v1Queue()">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 40px; height: 40px; background: var(--accent-green); color: #000; border-radius: 10px; display:flex; align-items:center; justify-content:center; font-size: 20px; font-weight: 900;">⚔️</div>
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 46px; height: 46px; background: var(--accent-green); color: #000; border-radius: 12px; display:flex; align-items:center; justify-content:center; font-size: 22px; font-weight: 900;">⚔️</div>
               <div>
-                <div style="font-weight: 900; font-size: 15px; color: var(--text-main);">CANLI 1v1 HIZ YARIŞI</div>
+                <div style="font-weight: 900; font-size: 16px; color: var(--text-main);">CANLI 1v1 HIZ YARIŞI</div>
                 <div style="font-size: 11px; color: var(--accent-green); font-weight: 700;">30sn Tur Süresi • Ortak Oyuncuyu İLK SEN Yaz!</div>
               </div>
             </div>
-            <span style="color: var(--accent-green); font-weight: 900;">➔</span>
+            <span style="color: var(--accent-green); font-weight: 900; font-size: 18px;">➔</span>
           </div>
 
           <div class="btn-card" onclick="openTicTacToe()">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 40px; height: 40px; background: var(--bg-card-secondary); border-radius: 10px; display:flex; align-items:center; justify-content:center; font-size: 20px; color: var(--accent-warning);">❌⭕</div>
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 44px; height: 44px; background: var(--bg-card-secondary); border-radius: 12px; display:flex; align-items:center; justify-content:center; font-size: 22px; color: var(--accent-warning);">❌⭕</div>
               <div>
-                <div style="font-weight: 900; font-size: 14px; color: var(--text-main);">FUTBOL TIC-TAC-TOE (XOX)</div>
+                <div style="font-weight: 900; font-size: 15px; color: var(--text-main);">FUTBOL TIC-TAC-TOE (XOX)</div>
                 <div style="font-size: 11px; color: var(--text-muted);">Taktiksel 3'lü Dizilimi İlk Tamamlayan Kazanır</div>
               </div>
             </div>
-            <span style="color: var(--text-muted); font-weight: 900;">➔</span>
+            <span style="color: var(--text-muted); font-weight: 900; font-size: 18px;">➔</span>
           </div>
 
           <div class="btn-card" onclick="openLeaderboard()">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 40px; height: 40px; background: var(--bg-card-secondary); border-radius: 10px; display:flex; align-items:center; justify-content:center; font-size: 20px;">🏆</div>
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 44px; height: 44px; background: var(--bg-card-secondary); border-radius: 12px; display:flex; align-items:center; justify-content:center; font-size: 22px;">🏆</div>
               <div>
-                <div style="font-weight: 900; font-size: 14px; color: var(--text-main);">LİDERLİK TABLOSU</div>
+                <div style="font-weight: 900; font-size: 15px; color: var(--text-main);">LİDERLİK TABLOSU</div>
                 <div style="font-size: 11px; color: var(--text-muted);">En Yüksek ELO Puanlı Şampiyonlar</div>
               </div>
             </div>
-            <span style="color: var(--text-muted); font-weight: 900;">➔</span>
+            <span style="color: var(--text-muted); font-weight: 900; font-size: 18px;">➔</span>
           </div>
 
           <div class="btn-card" onclick="openFriendsLobby()">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 40px; height: 40px; background: var(--bg-card-secondary); border-radius: 10px; display:flex; align-items:center; justify-content:center; font-size: 20px;">👥</div>
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 44px; height: 44px; background: var(--bg-card-secondary); border-radius: 12px; display:flex; align-items:center; justify-content:center; font-size: 22px;">👥</div>
               <div>
-                <div style="font-weight: 900; font-size: 14px; color: var(--text-main);">ARKADAŞINLA OYNA (ÖZEL ODA)</div>
+                <div style="font-weight: 900; font-size: 15px; color: var(--text-main);">ARKADAŞINLA OYNA (ÖZEL ODA)</div>
                 <div style="font-size: 11px; color: var(--text-muted);">Oda Kodu İle Özel 1v1 Maç Odası</div>
               </div>
             </div>
-            <span style="color: var(--text-muted); font-weight: 900;">➔</span>
+            <span style="color: var(--text-muted); font-weight: 900; font-size: 18px;">➔</span>
           </div>
 
           <div class="btn-card" onclick="openPhysicalExplorer()">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 40px; height: 40px; background: var(--bg-card-secondary); border-radius: 10px; display:flex; align-items:center; justify-content:center; font-size: 20px;">📖</div>
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 44px; height: 44px; background: var(--bg-card-secondary); border-radius: 12px; display:flex; align-items:center; justify-content:center; font-size: 22px;">📖</div>
               <div>
-                <div style="font-weight: 900; font-size: 14px; color: var(--text-main);">KARİYER & TRANSFER İNCELEYİCİ</div>
+                <div style="font-weight: 900; font-size: 15px; color: var(--text-main);">KARİYER & TRANSFER İNCELEYİCİ</div>
                 <div style="font-size: 11px; color: var(--text-muted);">20,000+ Futbolcunun Canlı Transfer Geçmişi</div>
               </div>
             </div>
-            <span style="color: var(--text-muted); font-weight: 900;">➔</span>
+            <span style="color: var(--text-muted); font-weight: 900; font-size: 18px;">➔</span>
           </div>
         </div>
       </div>
@@ -917,7 +854,7 @@
 
         <div class="auth-form-card" style="align-items: center; text-align: center;">
           <div style="width: 64px; height: 64px; background: var(--bg-active); border: 2px solid var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: var(--accent-green);" id="profAvatarBox">S</div>
-          <div style="font-weight: 900; font-size: 18px; color: var(--text-main);" id="userNameDisplay">FootballLinker</div>
+          <div style="font-weight: 900; font-size: 18px; color: var(--text-main);" id="userNameDisplay">Süleyman</div>
           <div style="font-size: 12px; color: var(--accent-green);" id="userSubDisplay">🦅 Beşiktaş J.K.</div>
           <button class="btn-secondary" style="color: var(--accent-danger); border-color: rgba(239,68,68,0.3); margin-top: 8px;" onclick="handleLogout()">🚪 Hesaptan Çıkış Yap</button>
         </div>
@@ -984,8 +921,6 @@
     let currentUser = null;
     let activeRegisterEmail = null;
     let currentTTTGrid = null;
-    let selectedTTTCell = null;
-    let currentMatchInfo = null;
 
     window.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('football_link_user');
@@ -1004,13 +939,11 @@
 
     socket.on('matchFound', (data) => {
       roomId = data.roomId;
-      currentMatchInfo = data;
       showView('viewDraft');
     });
 
     socket.on('startRoundDraft', (data) => {
       showView('viewDraft');
-      const defaultTeam = (currentUser && currentUser.favTeam) ? currentUser.favTeam : 'Beşiktaş';
       document.getElementById('selectedTeamStatus').innerText = `Tur ${data.round}: 20s içinde takımını seç!`;
       document.getElementById('selectTimerVal').innerText = `${data.selectTimeLimit || 20}s`;
     });
@@ -1045,10 +978,6 @@
 
     socket.on('turnTimerTick', (data) => {
       document.getElementById('timerVal').innerText = `${data.seconds}s`;
-    });
-
-    socket.on('roundStart', (data) => {
-      showView('viewArena');
     });
 
     socket.on('answerResult', (data) => {
@@ -1109,7 +1038,6 @@
 
     function updateUserProfileUI() {
       if (!currentUser) return;
-      
       const nameElem = document.getElementById('usernameDisplay') || document.getElementById('userNameDisplay');
       if (nameElem) nameElem.innerText = currentUser.username;
       
@@ -1246,13 +1174,8 @@
       document.getElementById('formVerifyCode').style.display = 'flex';
     }
 
-    async function handleConfirmVerifyCode() {
-      handleDemoLogin('guest');
-    }
-
-    function handleRealGoogleSignIn() {
-      handleDemoLogin('guest');
-    }
+    async function handleConfirmVerifyCode() { handleDemoLogin('guest'); }
+    function handleRealGoogleSignIn() { handleDemoLogin('guest'); }
 
     function openTicTacToe() {
       showView('viewSearch');
@@ -1284,13 +1207,8 @@
       }
     }
 
-    function selectTTTCell(r, c) {
-      document.getElementById('tttInputWrap').style.display = 'flex';
-    }
-
-    function submitTTTCellMove() {
-      document.getElementById('tttInputWrap').style.display = 'none';
-    }
+    function selectTTTCell(r, c) { document.getElementById('tttInputWrap').style.display = 'flex'; }
+    function submitTTTCellMove() { document.getElementById('tttInputWrap').style.display = 'none'; }
 
     async function onPhysicalSearch() {
       const q = document.getElementById('dbSearchInput').value.trim();
@@ -1301,7 +1219,7 @@
         const players = await res.json();
         list.innerHTML = '';
         players.forEach(p => {
-          list.innerHTML += `<div class="ticker-row"><span>${p.name}</span><span style="color:var(--accent-green);">${p.nationality || 'Futbolcu'}</span></div>`;
+          list.innerHTML += `<div style="background:var(--bg-card-secondary); padding:10px; border-radius:var(--radius-md); display:flex; justify-content:space-between;"><span>${p.name}</span><span style="color:var(--accent-green);">${p.nationality || 'Futbolcu'}</span></div>`;
         });
       } catch (e) {}
     }
