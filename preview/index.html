@@ -421,16 +421,15 @@
       50% { opacity: 0.65; text-shadow: 0 0 2px rgba(16, 185, 129, 0.2); }
     }
 
-    /* EXPLORER FUT CARDS DESIGN */
+    /* EXPLORER FUT CARDS DESIGN WITH CAREER TIMELINE */
     .explorer-card {
       background: linear-gradient(135deg, var(--bg-card), var(--bg-card-secondary));
       border: 1px solid var(--border-color);
       border-radius: var(--radius-xl);
       padding: 14px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      flex-direction: column;
+      gap: 10px;
       transition: all 0.25s ease;
     }
 
@@ -440,6 +439,13 @@
       box-shadow: 0 6px 20px rgba(16, 185, 129, 0.15);
     }
 
+    .explorer-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
     .explorer-card-left {
       display: flex;
       align-items: center;
@@ -447,15 +453,15 @@
     }
 
     .explorer-avatar-box {
-      width: 50px;
-      height: 50px;
+      width: 48px;
+      height: 48px;
       background: var(--bg-active);
       border: 2px solid var(--accent-green);
       border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 22px;
     }
 
     .explorer-player-name {
@@ -467,11 +473,11 @@
     .explorer-team-badge {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       font-size: 11px;
       font-weight: 800;
       color: var(--accent-green);
-      margin-top: 3px;
+      margin-top: 2px;
     }
 
     .explorer-card-right {
@@ -486,8 +492,8 @@
       border: 1px solid var(--accent-green);
       color: var(--accent-green);
       font-weight: 900;
-      font-size: 12px;
-      padding: 3px 10px;
+      font-size: 11px;
+      padding: 3px 9px;
       border-radius: 12px;
     }
 
@@ -495,6 +501,51 @@
       font-size: 10px;
       color: var(--text-muted);
       font-weight: 700;
+    }
+
+    .career-history-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border-input);
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .career-history-title {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .career-history-timeline {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .history-club-badge {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .history-club-current {
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 900;
     }
 
     .team-grid {
@@ -951,7 +1002,7 @@
         </div>
       </div>
 
-      <!-- 7. ULTRA HIGH-FIDELITY CAREER EXPLORER VIEW -->
+      <!-- 7. ULTRA HIGH-FIDELITY CAREER EXPLORER VIEW (WITH TRANSFER TIMELINES) -->
       <div class="view" id="viewExplorer">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div style="font-weight: 900; font-size: 16px; color: var(--text-main);">📖 KARİYER & TRANSFER İNCELEYİCİ</div>
@@ -1059,15 +1110,87 @@
     let currentTTTGrid = null;
 
     const defaultPlayers = [
-      { name: 'Victor Osimhen', team: 'Galatasaray S.K.', logo: '🦁', nation: '🇳🇬 Nijerya', pos: 'ST', ovr: '89 OVR' },
-      { name: 'Mauro Icardi', team: 'Galatasaray S.K.', logo: '🦁', nation: '🇦🇷 Arjantin', pos: 'ST', ovr: '87 OVR' },
-      { name: 'Gheorghe Hagi', team: 'Efsane / Galatasaray', logo: '👑', nation: '🇷🇴 Romanya', pos: 'CAM', ovr: '93 OVR' },
-      { name: 'Cristiano Ronaldo', team: 'Al-Nassr FC', logo: '🟡', nation: '🇵🇹 Portekiz', pos: 'ST', ovr: '91 OVR' },
-      { name: 'Lionel Messi', team: 'Inter Miami CF', logo: '💗', nation: '🇦🇷 Arjantin', pos: 'RW', ovr: '92 OVR' },
-      { name: 'Zinedine Zidane', team: 'Efsane / Real Madrid', logo: '👑', nation: '🇫🇷 Fransa', pos: 'CM', ovr: '95 OVR' },
-      { name: 'Kylian Mbappé', team: 'Real Madrid C.F.', logo: '⚪', nation: '🇫🇷 Fransa', pos: 'ST', ovr: '92 OVR' },
-      { name: 'Jude Bellingham', team: 'Real Madrid C.F.', logo: '⚪', nation: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 İngiltere', pos: 'CAM', ovr: '90 OVR' },
-      { name: 'Lamine Yamal', team: 'FC Barcelona', logo: '🔵🔴', nation: '🇪🇸 İspanya', pos: 'RW', ovr: '86 OVR' }
+      {
+        name: 'Victor Osimhen',
+        team: 'Galatasaray S.K.',
+        logo: '🦁',
+        nation: '🇳🇬 Nijerya',
+        pos: 'ST',
+        ovr: '89 OVR',
+        history: ['Wolfsburg', 'Charleroi', 'Lille', 'Napoli', 'Galatasaray']
+      },
+      {
+        name: 'Mauro Icardi',
+        team: 'Galatasaray S.K.',
+        logo: '🦁',
+        nation: '🇦🇷 Arjantin',
+        pos: 'ST',
+        ovr: '87 OVR',
+        history: ['Sampdoria', 'Inter Milan', 'PSG', 'Galatasaray']
+      },
+      {
+        name: 'Gheorghe Hagi',
+        team: 'Efsane / Galatasaray',
+        logo: '👑',
+        nation: '🇷🇴 Romanya',
+        pos: 'CAM',
+        ovr: '93 OVR',
+        history: ['Steaua Bükreş', 'Real Madrid', 'Brescia', 'Barcelona', 'Galatasaray']
+      },
+      {
+        name: 'Cristiano Ronaldo',
+        team: 'Al-Nassr FC',
+        logo: '🟡',
+        nation: '🇵🇹 Portekiz',
+        pos: 'ST',
+        ovr: '91 OVR',
+        history: ['Sporting CP', 'Man United', 'Real Madrid', 'Juventus', 'Al-Nassr']
+      },
+      {
+        name: 'Lionel Messi',
+        team: 'Inter Miami CF',
+        logo: '💗',
+        nation: '🇦🇷 Arjantin',
+        pos: 'RW',
+        ovr: '92 OVR',
+        history: ['Newell\'s', 'Barcelona', 'PSG', 'Inter Miami']
+      },
+      {
+        name: 'Zinedine Zidane',
+        team: 'Efsane / Real Madrid',
+        logo: '👑',
+        nation: '🇫🇷 Fransa',
+        pos: 'CM',
+        ovr: '95 OVR',
+        history: ['Cannes', 'Bordeaux', 'Juventus', 'Real Madrid']
+      },
+      {
+        name: 'Kylian Mbappé',
+        team: 'Real Madrid C.F.',
+        logo: '⚪',
+        nation: '🇫🇷 Fransa',
+        pos: 'ST',
+        ovr: '92 OVR',
+        history: ['AS Monaco', 'PSG', 'Real Madrid']
+      },
+      {
+        name: 'Jude Bellingham',
+        team: 'Real Madrid C.F.',
+        logo: '⚪',
+        nation: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 İngiltere',
+        pos: 'CAM',
+        ovr: '90 OVR',
+        history: ['Birmingham', 'Dortmund', 'Real Madrid']
+      },
+      {
+        name: 'Lamine Yamal',
+        team: 'FC Barcelona',
+        logo: '🔵🔴',
+        nation: '🇪🇸 İspanya',
+        pos: 'RW',
+        ovr: '86 OVR',
+        history: ['La Masia', 'FC Barcelona']
+      }
     ];
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -1377,12 +1500,13 @@
             logo: '⚽',
             nation: p.nationality || 'Futbolcu',
             pos: p.position || 'ST',
-            ovr: '88 OVR'
+            ovr: '88 OVR',
+            history: p.teamsHistory || [p.currentTeam || 'Serbest']
           }));
           renderExplorerPlayers(mapped);
         } else {
           const filtered = defaultPlayers.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || p.team.toLowerCase().includes(q.toLowerCase()));
-          renderExplorerPlayers(filtered.length > 0 ? filtered : [{ name: q, team: 'Özel Futbolcu', logo: '⚽', nation: 'Sporcu', pos: 'ST', ovr: '85 OVR' }]);
+          renderExplorerPlayers(filtered.length > 0 ? filtered : [{ name: q, team: 'Özel Futbolcu', logo: '⚽', nation: 'Sporcu', pos: 'ST', ovr: '85 OVR', history: ['Amatör', 'Serbest'] }]);
         }
       } catch (e) {
         const filtered = defaultPlayers.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || p.team.toLowerCase().includes(q.toLowerCase()));
@@ -1395,21 +1519,36 @@
       if (!list) return;
       list.innerHTML = '';
       players.forEach(p => {
+        const historyHTML = (p.history && p.history.length > 0) ? p.history.map((club, idx) => {
+          const isLast = idx === p.history.length - 1;
+          const badgeClass = isLast ? 'history-club-current' : 'history-club-badge';
+          return `<span class="${badgeClass}">${club}</span>${isLast ? '' : ' <span style="color:var(--text-muted); font-size:10px;">➔</span> '}`;
+        }).join('') : `<span class="history-club-current">${p.team}</span>`;
+
         list.innerHTML += `
           <div class="explorer-card">
-            <div class="explorer-card-left">
-              <div class="explorer-avatar-box">${p.logo || '⚽'}</div>
-              <div>
-                <div class="explorer-player-name">${p.name}</div>
-                <div class="explorer-team-badge">
-                  <span>🛡️</span>
-                  <span>${p.team || 'Takımsız'}</span>
+            <div class="explorer-card-top">
+              <div class="explorer-card-left">
+                <div class="explorer-avatar-box">${p.logo || '⚽'}</div>
+                <div>
+                  <div class="explorer-player-name">${p.name}</div>
+                  <div class="explorer-team-badge">
+                    <span>🛡️ Mevcut Takım:</span>
+                    <span>${p.team || 'Takımsız'}</span>
+                  </div>
                 </div>
               </div>
+              <div class="explorer-card-right">
+                <div class="explorer-ovr-tag">${p.pos || 'ST'} • ${p.ovr || '88 OVR'}</div>
+                <div class="explorer-nation-tag">${p.nation || 'Futbolcu'}</div>
+              </div>
             </div>
-            <div class="explorer-card-right">
-              <div class="explorer-ovr-tag">${p.pos || 'ST'} • ${p.ovr || '88 OVR'}</div>
-              <div class="explorer-nation-tag">${p.nation || 'Futbolcu'}</div>
+
+            <div class="career-history-box">
+              <div class="career-history-title">📜 Kariyer Transfer Geçmişi:</div>
+              <div class="career-history-timeline">
+                ${historyHTML}
+              </div>
             </div>
           </div>
         `;
