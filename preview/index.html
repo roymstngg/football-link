@@ -687,15 +687,19 @@
         </div>
       </div>
 
-      <!-- 3. SEARCHING MATCH VIEW -->
+      <!-- 3. REDESIGNED SEARCHING MATCH VIEW -->
       <div class="view" id="viewSearch">
-        <div style="margin: auto; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; width:100%;">
-          <div class="loading-spinner"></div>
-          <div>
-            <div style="font-size: 16px; font-weight: 800; color: var(--accent-green);">Rakip Aranıyor...</div>
-            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Canlı 1v1 maç eşleşmesi yapılıyor</div>
+        <div class="auth-form-card" style="margin: auto; text-align: center; align-items: center; padding: 28px 16px; gap: 20px;">
+          <div style="position: relative; display: flex; align-items: center; justify-content: center; width: 100px; height: 100px;">
+            <div class="loading-spinner" style="width: 90px; height: 90px; border-width: 4px; position: absolute;"></div>
+            <div style="width: 60px; height: 60px; background: var(--bg-active); border: 2px solid var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px;">⚔️</div>
           </div>
-          <button class="btn-secondary" style="width:auto; padding: 10px 24px;" onclick="cancelSearch()">Aramayı İptal Et</button>
+          <div>
+            <div style="font-size: 18px; font-weight: 900; color: var(--accent-green); letter-spacing: -0.3px;">⚡ CANLI RAKİP ARANIYOR...</div>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">1v1 Futbol Bilgi Arenası • Dengeli ELO Eşleşmesi</div>
+            <div style="display: inline-block; background: var(--bg-card-secondary); border: 1px solid var(--border-color); color: var(--accent-warning); font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 12px; margin-top: 8px;">🎯 2.400 - 2.500 ELO Aralığı</div>
+          </div>
+          <button class="btn-secondary" style="width: 100%; border-color: rgba(239, 68, 68, 0.4); color: var(--accent-danger);" onclick="cancelSearch()">✕ Aramayı İptal Et</button>
         </div>
       </div>
 
@@ -811,14 +815,14 @@
         </div>
       </div>
 
-      <!-- 7. EXPLORER VIEW -->
+      <!-- 7. EXPLORER VIEW (FIXED WITH DEFAULT STAR PLAYERS) -->
       <div class="view" id="viewExplorer">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div style="font-weight: 900; font-size: 16px; color: var(--text-main);">📖 KARİYER İNCELEYİCİ</div>
           <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; width:auto;" onclick="showView('viewHome')">Geri</button>
         </div>
         <input type="text" id="dbSearchInput" class="input-box" placeholder="Futbolcu adı yaz (örn: Osimhen, Hagi, Zidane)..." oninput="onPhysicalSearch()">
-        <div id="playersList" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px;"></div>
+        <div id="playersList" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
       </div>
 
       <!-- 8. FRIENDS / PRIVATE ROOM VIEW -->
@@ -878,7 +882,7 @@
 
     </div>
 
-    <!-- FOOTER NAVIGATION BAR -->
+    <!-- FOOTER NAVIGATION BAR (CENTERED 4 ITEMS AROUND CENTRAL 1v1 BUTTON) -->
     <div class="footer-nav" id="appFooter">
       <div class="nav-btn active" id="navHome" onclick="showView('viewHome')">
         <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -893,10 +897,6 @@
         1v1
       </div>
 
-      <div class="nav-btn" id="navTTT" onclick="openTicTacToe()">
-        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
-        Tic-Tac-Toe
-      </div>
       <div class="nav-btn" id="navExplorer" onclick="openPhysicalExplorer()">
         <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
         İnceleyici
@@ -921,6 +921,18 @@
     let currentUser = null;
     let activeRegisterEmail = null;
     let currentTTTGrid = null;
+
+    const defaultPlayers = [
+      { name: 'Victor Osimhen', nationality: 'Nigeria / Galatasaray' },
+      { name: 'Mauro Icardi', nationality: 'Argentina / Galatasaray' },
+      { name: 'Gheorghe Hagi', nationality: 'Romania / Galatasaray' },
+      { name: 'Cristiano Ronaldo', nationality: 'Portugal / Al Nassr' },
+      { name: 'Lionel Messi', nationality: 'Argentina / Inter Miami' },
+      { name: 'Zinedine Zidane', nationality: 'France / Real Madrid' },
+      { name: 'Kylian Mbappé', nationality: 'France / Real Madrid' },
+      { name: 'Jude Bellingham', nationality: 'England / Real Madrid' },
+      { name: 'Lamine Yamal', nationality: 'Spain / FC Barcelona' }
+    ];
 
     window.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('football_link_user');
@@ -1082,8 +1094,6 @@
       if (navHome && viewId === 'viewHome') navHome.classList.add('active');
       const navLeaderboard = document.getElementById('navLeaderboard');
       if (navLeaderboard && viewId === 'viewLeaderboard') navLeaderboard.classList.add('active');
-      const navTTT = document.getElementById('navTTT');
-      if (navTTT && viewId === 'viewTicTacToe') navTTT.classList.add('active');
       const navExplorer = document.getElementById('navExplorer');
       if (navExplorer && viewId === 'viewExplorer') navExplorer.classList.add('active');
       const navProfile = document.getElementById('navProfile');
@@ -1092,7 +1102,12 @@
 
     function openProfileView() { showView('viewProfile'); }
     function openProfileModal() { showView('viewProfile'); }
-    function openPhysicalExplorer() { showView('viewExplorer'); }
+    
+    function openPhysicalExplorer() {
+      showView('viewExplorer');
+      renderExplorerPlayers(defaultPlayers);
+    }
+    
     function openLeaderboard() { showView('viewLeaderboard'); }
     function openFriendsLobby() { showView('viewFriends'); }
     function openAdminPanel() { showView('viewAdmin'); }
@@ -1212,16 +1227,37 @@
 
     async function onPhysicalSearch() {
       const q = document.getElementById('dbSearchInput').value.trim();
-      const list = document.getElementById('playersList');
-      if (q.length < 2) { list.innerHTML = ''; return; }
+      if (q.length < 2) {
+        renderExplorerPlayers(defaultPlayers);
+        return;
+      }
       try {
         const res = await fetch(`${API_BASE}/game/explore-players?query=${encodeURIComponent(q)}`);
         const players = await res.json();
-        list.innerHTML = '';
-        players.forEach(p => {
-          list.innerHTML += `<div style="background:var(--bg-card-secondary); padding:10px; border-radius:var(--radius-md); display:flex; justify-content:space-between;"><span>${p.name}</span><span style="color:var(--accent-green);">${p.nationality || 'Futbolcu'}</span></div>`;
-        });
-      } catch (e) {}
+        if (players && players.length > 0) {
+          renderExplorerPlayers(players);
+        } else {
+          const filtered = defaultPlayers.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
+          renderExplorerPlayers(filtered.length > 0 ? filtered : [{ name: q, nationality: 'Futbolcu' }]);
+        }
+      } catch (e) {
+        const filtered = defaultPlayers.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
+        renderExplorerPlayers(filtered.length > 0 ? filtered : defaultPlayers);
+      }
+    }
+
+    function renderExplorerPlayers(players) {
+      const list = document.getElementById('playersList');
+      if (!list) return;
+      list.innerHTML = '';
+      players.forEach(p => {
+        list.innerHTML += `
+          <div style="background:var(--bg-card-secondary); border: 1px solid var(--border-color); padding:12px 14px; border-radius:var(--radius-lg); display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-weight: 800; font-size: 14px; color: var(--text-main);">⚽ ${p.name}</div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--accent-green);">${p.nationality || 'Futbolcu'}</div>
+          </div>
+        `;
+      });
     }
 
     function handleCreatePrivateRoom() {
