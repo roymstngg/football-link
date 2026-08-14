@@ -353,7 +353,6 @@
       cursor: pointer;
     }
 
-    /* ANIMATED RADAR SCANNER FOR SEARCH VIEW */
     .radar-container {
       position: relative;
       width: 140px;
@@ -408,16 +407,46 @@
       100% { transform: scale(1.2); opacity: 0; }
     }
 
-    .animated-glow-text {
-      animation: text-glow 2s ease-in-out infinite;
-    }
+    .animated-glow-text { animation: text-glow 2s ease-in-out infinite; }
 
     @keyframes text-glow {
       0%, 100% { opacity: 1; text-shadow: 0 0 12px rgba(16, 185, 129, 0.8); }
       50% { opacity: 0.65; text-shadow: 0 0 2px rgba(16, 185, 129, 0.2); }
     }
 
-    /* EXPLORER FUT CARDS DESIGN WITH CAREER TIMELINE */
+    .vs-profile-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .profile-avatar-img {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-green);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+      background: var(--bg-active);
+    }
+
+    .profile-avatar-placeholder {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--bg-active);
+      border: 2px solid var(--accent-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      color: var(--accent-green);
+      font-size: 22px;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+    }
+
     .explorer-card {
       background: linear-gradient(135deg, var(--bg-card), var(--bg-card-secondary));
       border: 1px solid var(--border-color);
@@ -638,6 +667,30 @@
       font-weight: 900;
       color: var(--accent-green);
     }
+
+    .avatar-select-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .avatar-option {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      object-fit: cover;
+      cursor: pointer;
+      background: var(--bg-card-secondary);
+      transition: all 0.2s ease;
+    }
+
+    .avatar-option:hover, .avatar-option.selected {
+      border-color: var(--accent-green);
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
   </style>
 </head>
 <body>
@@ -749,7 +802,7 @@
       <div class="view" id="viewHome">
         <div class="auth-form-card" style="flex-direction: row; align-items: center; justify-content: space-between; padding: 14px; cursor: pointer;" onclick="openProfileModal()">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 44px; height: 44px; background: var(--bg-active); border: 2px solid var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--accent-green);" id="userAvatar">S</div>
+            <div id="homeUserAvatarBox" style="width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--accent-green); overflow: hidden; background: var(--bg-active); display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--accent-green);">S</div>
             <div>
               <div style="font-weight: 900; font-size: 16px; color: var(--text-main);" id="usernameDisplay">Süleyman</div>
               <div style="font-size: 11px; font-weight: 700; color: var(--accent-green);" id="favTeamDisplay">🦅 Beşiktaş J.K.</div>
@@ -757,7 +810,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
             <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green); font-weight: 900; font-size: 13px; padding: 4px 12px; border-radius: 14px;" id="userEloDisplay">2.450 ELO ↗</div>
-            <button style="background:none; border:none; color:var(--accent-danger); font-size:18px; cursor:pointer;" onclick="event.stopPropagation(); handleLogout();">🚪</button>
+            <button style="background:none; border:none; color:var(--text-muted); font-size:18px; cursor:pointer;" onclick="event.stopPropagation(); openProfileModal();">⚙️</button>
           </div>
         </div>
 
@@ -863,11 +916,28 @@
         </div>
       </div>
 
-      <!-- 3. ULTRA ANIMATED RADAR MATCH SEARCH VIEW -->
+      <!-- 3. ULTRA ANIMATED RADAR MATCH SEARCH VIEW WITH PROFILE VS CARD -->
       <div class="view" id="viewSearch">
-        <div class="auth-form-card" style="margin: auto; text-align: center; align-items: center; padding: 28px 16px; gap: 18px;">
+        <div class="auth-form-card" style="margin: auto; text-align: center; align-items: center; padding: 18px 14px; gap: 14px; width: 100%;">
           
-          <!-- ANIMATED SONAR RADAR BEAM -->
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 12px 10px; background: var(--bg-card-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+            <div class="vs-profile-box">
+              <div id="searchP1AvatarContainer">
+                <div class="profile-avatar-placeholder" id="searchP1Avatar">S</div>
+              </div>
+              <div style="font-weight: 900; font-size: 13px; color: var(--text-main); margin-top: 2px;" id="searchP1Name">Süleyman</div>
+              <div style="font-size: 10px; font-weight: 800; color: var(--accent-green);" id="searchP1Team">🦅 Beşiktaş</div>
+            </div>
+
+            <div style="font-size: 16px; font-weight: 900; color: var(--accent-warning); background: var(--bg-dark); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--accent-warning); box-shadow: 0 0 10px rgba(245,158,11,0.3);">VS</div>
+
+            <div class="vs-profile-box" id="searchP2Container">
+              <div style="width: 54px; height: 54px; border-radius: 50%; border: 2px dashed var(--accent-warning); background: var(--bg-dark); display: flex; align-items: center; justify-content: center; font-size: 22px; animation: pulse-ring 1.5s infinite;">⚡</div>
+              <div style="font-weight: 900; font-size: 13px; color: var(--accent-warning); margin-top: 2px;" id="searchP2Name">Rakip Aranıyor...</div>
+              <div style="font-size: 10px; font-weight: 800; color: var(--text-muted);" id="searchP2Elo">2.400 - 2.500 ELO</div>
+            </div>
+          </div>
+
           <div class="radar-container">
             <div class="radar-ring radar-ring-1"></div>
             <div class="radar-ring radar-ring-2"></div>
@@ -877,9 +947,8 @@
           </div>
 
           <div>
-            <div class="animated-glow-text" style="font-size: 18px; font-weight: 900; color: var(--accent-green); letter-spacing: -0.3px;">⚡ CANLI RAKİP ARANIYOR...</div>
-            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">1v1 Futbol Arenası • Dengeli ELO Eşleşmesi</div>
-            <div style="display: inline-block; background: var(--bg-card-secondary); border: 1px solid var(--border-color); color: var(--accent-warning); font-size: 11px; font-weight: 800; padding: 5px 14px; border-radius: 14px; margin-top: 10px;">🎯 2.400 - 2.500 ELO Aralığı Taraftarı</div>
+            <div class="animated-glow-text" style="font-size: 17px; font-weight: 900; color: var(--accent-green); letter-spacing: -0.3px;">⚡ CANLI RAKİP ARANIYOR...</div>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;">1v1 Futbol Arenası • Dengeli ELO Eşleşmesi</div>
           </div>
 
           <button class="btn-secondary" style="width: 100%; border-color: rgba(239, 68, 68, 0.4); color: var(--accent-danger); font-weight: 800;" onclick="cancelSearch()">✕ Aramayı İptal Et</button>
@@ -943,23 +1012,42 @@
         </div>
       </div>
 
-      <!-- 5. 1v1 MATCH ARENA VIEW -->
+      <!-- 5. 1v1 MATCH ARENA VIEW WITH PROFILES IN HEADER -->
       <div class="view" id="viewArena">
         <div class="auth-form-card" style="padding: 12px; gap: 10px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card-secondary); padding: 8px 12px; border-radius: var(--radius-md);">
-            <div id="p1Label" style="font-weight: 900; font-size: 13px; color: var(--accent-green);">SEN: 0</div>
-            <div style="font-size: 10px; font-weight: 800; color: var(--accent-warning);">🎯 3 PUANA ULAŞ</div>
-            <div id="p2Label" style="font-weight: 900; font-size: 13px; color: var(--text-main);">RAKİP: 0</div>
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card-secondary); padding: 10px 14px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div id="arenaP1AvatarBox">
+                <div class="profile-avatar-placeholder" style="width:40px; height:40px; font-size:16px;" id="arenaP1Avatar">S</div>
+              </div>
+              <div>
+                <div id="arenaP1Name" style="font-weight: 900; font-size: 13px; color: var(--accent-green);">SEN</div>
+                <div id="p1Label" style="font-weight: 900; font-size: 15px; color: var(--text-main);">0 Puan</div>
+              </div>
+            </div>
+
+            <div style="font-size: 11px; font-weight: 900; color: var(--accent-warning); background: var(--bg-dark); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-color);">3 PUAN WIN</div>
+
+            <div style="display: flex; align-items: center; gap: 10px; flex-direction: row-reverse;">
+              <div id="arenaP2AvatarBox">
+                <div class="profile-avatar-placeholder" style="width:40px; height:40px; font-size:16px; border-color:var(--text-muted); color:var(--text-muted);" id="arenaP2Avatar">R</div>
+              </div>
+              <div style="text-align: right;">
+                <div id="arenaP2Name" style="font-weight: 900; font-size: 13px; color: var(--text-secondary);">RAKİP</div>
+                <div id="p2Label" style="font-weight: 900; font-size: 15px; color: var(--text-main);">0 Puan</div>
+              </div>
+            </div>
           </div>
 
-          <div style="display: flex; justify-content: space-around; align-items: center; padding: 12px 0;">
+          <div style="display: flex; justify-content: space-around; align-items: center; padding: 8px 0;">
             <div style="text-align: center;">
-              <img id="logoA" src="https://media.api-sports.io/football/teams/541.png" style="width: 48px; height: 48px; object-fit: contain;">
+              <img id="logoA" src="https://media.api-sports.io/football/teams/541.png" style="width: 44px; height: 44px; object-fit: contain;">
               <div id="nameA" style="font-weight: 800; font-size: 12px; margin-top: 4px;">Takım A</div>
             </div>
             <div style="font-size: 18px; font-weight: 900; color: var(--accent-green);">VS</div>
             <div style="text-align: center;">
-              <img id="logoB" src="https://media.api-sports.io/football/teams/611.png" style="width: 48px; height: 48px; object-fit: contain;">
+              <img id="logoB" src="https://media.api-sports.io/football/teams/611.png" style="width: 44px; height: 44px; object-fit: contain;">
               <div id="nameB" style="font-weight: 800; font-size: 12px; margin-top: 4px;">Takım B</div>
             </div>
           </div>
@@ -998,7 +1086,7 @@
         </div>
       </div>
 
-      <!-- 7. ULTRA HIGH-FIDELITY CAREER EXPLORER VIEW (WITH TRANSFER TIMELINES) -->
+      <!-- 7. CAREER EXPLORER VIEW -->
       <div class="view" id="viewExplorer">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div style="font-weight: 900; font-size: 16px; color: var(--text-main);">📖 KARİYER & TRANSFER İNCELEYİCİ</div>
@@ -1032,19 +1120,73 @@
         </div>
       </div>
 
-      <!-- 9. USER PROFILE VIEW -->
+      <!-- 9. ADVANCED PROFILE & SETTINGS VIEW (WITH AVATAR PHOTO SELECTOR) -->
       <div class="view" id="viewProfile">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="font-weight: 900; font-size: 16px; color: var(--text-main);">👤 KULLANICI PROFİLİ</div>
+          <div style="font-weight: 900; font-size: 16px; color: var(--text-main);">⚙️ PROFİL & AYARLAR</div>
           <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; width:auto;" onclick="showView('viewHome')">Geri</button>
         </div>
 
         <div class="auth-form-card" style="align-items: center; text-align: center;">
-          <div style="width: 64px; height: 64px; background: var(--bg-active); border: 2px solid var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: var(--accent-green);" id="profAvatarBox">S</div>
-          <div style="font-weight: 900; font-size: 18px; color: var(--text-main);" id="userNameDisplay">Süleyman</div>
-          <div style="font-size: 12px; color: var(--accent-green);" id="userSubDisplay">🦅 Beşiktaş J.K.</div>
-          <button class="btn-secondary" style="color: var(--accent-danger); border-color: rgba(239,68,68,0.3); margin-top: 8px;" onclick="handleLogout()">🚪 Hesaptan Çıkış Yap</button>
+          <div style="position: relative;">
+            <div id="settingsAvatarDisplay">
+              <div style="width: 76px; height: 76px; background: var(--bg-active); border: 2px solid var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; color: var(--accent-green);" id="profAvatarBox">S</div>
+            </div>
+            <label for="avatarFileInput" style="position: absolute; bottom: 0; right: 0; background: var(--accent-green); color: #000; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; border: 2px solid var(--bg-card);" title="Fotoğraf Yükle">📷</label>
+            <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+          </div>
+
+          <div style="font-weight: 900; font-size: 18px; color: var(--text-main); margin-top: 4px;" id="userNameDisplay">Süleyman</div>
+          <div style="font-size: 12px; color: var(--accent-green);" id="userSubDisplay">🦅 Beşiktaş J.K. • 2.450 ELO</div>
+
+          <div style="width: 100%; margin-top: 8px;">
+            <div class="form-label" style="font-size: 10px; text-align: left;">Profil Avatarı Seç veya Fotoğraf Yükle:</div>
+            <div class="avatar-select-grid">
+              <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120" class="avatar-option" onclick="selectPresetAvatar(this.src)">
+              <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=120" class="avatar-option" onclick="selectPresetAvatar(this.src)">
+              <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=120" class="avatar-option" onclick="selectPresetAvatar(this.src)">
+              <img src="https://images.unsplash.com/photo-1628157582853-a796fa650a6a?w=120" class="avatar-option" onclick="selectPresetAvatar(this.src)">
+              <img src="logo.jpg" class="avatar-option" onclick="selectPresetAvatar(this.src)">
+            </div>
+          </div>
         </div>
+
+        <div class="auth-form-card">
+          <div style="font-weight: 800; font-size: 13px; color: var(--accent-green);">✏️ Profil Bilgilerini Düzenle</div>
+          <div class="form-group">
+            <label class="form-label">Kullanıcı Adı</label>
+            <input type="text" id="editUsername" class="input-box" value="Süleyman">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Favori Takım</label>
+            <select id="editFavTeam" class="input-box">
+              <option value="Beşiktaş">🦅 Beşiktaş J.K.</option>
+              <option value="Fenerbahçe">🟡🔵 Fenerbahçe S.K.</option>
+              <option value="Galatasaray">🔴🟡 Galatasaray S.K.</option>
+              <option value="Real Madrid">👑 Real Madrid C.F.</option>
+              <option value="Barcelona">🔵🔴 FC Barcelona</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="saveProfileChanges()">💾 Ayarları Kaydet</button>
+        </div>
+
+        <div class="auth-form-card">
+          <div style="font-weight: 800; font-size: 13px; color: var(--text-main);">🔊 Oyun & Ses Ayarları</div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; font-weight: 700;">Ses Efektleri & Düdük</span>
+            <input type="checkbox" checked style="width:18px; height:18px; accent-color:var(--accent-green);">
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; font-weight: 700;">Titreşimli Geri Bildirim</span>
+            <input type="checkbox" checked style="width:18px; height:18px; accent-color:var(--accent-green);">
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; font-weight: 700;">Maç Davet Bildirimleri</span>
+            <input type="checkbox" checked style="width:18px; height:18px; accent-color:var(--accent-green);">
+          </div>
+        </div>
+
+        <button class="btn-secondary" style="color: var(--accent-danger); border-color: rgba(239,68,68,0.3);" onclick="handleLogout()">🚪 Hesaptan Çıkış Yap</button>
       </div>
 
       <!-- 10. ADMIN PANEL VIEW -->
@@ -1065,7 +1207,7 @@
 
     </div>
 
-    <!-- FOOTER NAVIGATION BAR (CENTERED 4 ITEMS AROUND CENTRAL 1v1 BUTTON) -->
+    <!-- FOOTER NAVIGATION BAR -->
     <div class="footer-nav" id="appFooter">
       <div class="nav-btn active" id="navHome" onclick="showView('viewHome')">
         <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -1102,91 +1244,18 @@
 
     let roomId = null;
     let currentUser = null;
-    let activeRegisterEmail = null;
-    let currentTTTGrid = null;
+    let opponentUser = null;
 
     const defaultPlayers = [
-      {
-        name: 'Victor Osimhen',
-        team: 'Galatasaray S.K.',
-        logo: '🦁',
-        nation: '🇳🇬 Nijerya',
-        pos: 'ST',
-        ovr: '89 OVR',
-        history: ['Wolfsburg', 'Charleroi', 'Lille', 'Napoli', 'Galatasaray']
-      },
-      {
-        name: 'Mauro Icardi',
-        team: 'Galatasaray S.K.',
-        logo: '🦁',
-        nation: '🇦🇷 Arjantin',
-        pos: 'ST',
-        ovr: '87 OVR',
-        history: ['Sampdoria', 'Inter Milan', 'PSG', 'Galatasaray']
-      },
-      {
-        name: 'Gheorghe Hagi',
-        team: 'Efsane / Galatasaray',
-        logo: '👑',
-        nation: '🇷🇴 Romanya',
-        pos: 'CAM',
-        ovr: '93 OVR',
-        history: ['Steaua Bükreş', 'Real Madrid', 'Brescia', 'Barcelona', 'Galatasaray']
-      },
-      {
-        name: 'Cristiano Ronaldo',
-        team: 'Al-Nassr FC',
-        logo: '🟡',
-        nation: '🇵🇹 Portekiz',
-        pos: 'ST',
-        ovr: '91 OVR',
-        history: ['Sporting CP', 'Man United', 'Real Madrid', 'Juventus', 'Al-Nassr']
-      },
-      {
-        name: 'Lionel Messi',
-        team: 'Inter Miami CF',
-        logo: '💗',
-        nation: '🇦🇷 Arjantin',
-        pos: 'RW',
-        ovr: '92 OVR',
-        history: ['Newell\'s', 'Barcelona', 'PSG', 'Inter Miami']
-      },
-      {
-        name: 'Zinedine Zidane',
-        team: 'Efsane / Real Madrid',
-        logo: '👑',
-        nation: '🇫🇷 Fransa',
-        pos: 'CM',
-        ovr: '95 OVR',
-        history: ['Cannes', 'Bordeaux', 'Juventus', 'Real Madrid']
-      },
-      {
-        name: 'Kylian Mbappé',
-        team: 'Real Madrid C.F.',
-        logo: '⚪',
-        nation: '🇫🇷 Fransa',
-        pos: 'ST',
-        ovr: '92 OVR',
-        history: ['AS Monaco', 'PSG', 'Real Madrid']
-      },
-      {
-        name: 'Jude Bellingham',
-        team: 'Real Madrid C.F.',
-        logo: '⚪',
-        nation: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 İngiltere',
-        pos: 'CAM',
-        ovr: '90 OVR',
-        history: ['Birmingham', 'Dortmund', 'Real Madrid']
-      },
-      {
-        name: 'Lamine Yamal',
-        team: 'FC Barcelona',
-        logo: '🔵🔴',
-        nation: '🇪🇸 İspanya',
-        pos: 'RW',
-        ovr: '86 OVR',
-        history: ['La Masia', 'FC Barcelona']
-      }
+      { name: 'Victor Osimhen', team: 'Galatasaray S.K.', logo: '🦁', nation: '🇳🇬 Nijerya', pos: 'ST', ovr: '89 OVR', history: ['Wolfsburg', 'Charleroi', 'Lille', 'Napoli', 'Galatasaray'] },
+      { name: 'Mauro Icardi', team: 'Galatasaray S.K.', logo: '🦁', nation: '🇦🇷 Arjantin', pos: 'ST', ovr: '87 OVR', history: ['Sampdoria', 'Inter Milan', 'PSG', 'Galatasaray'] },
+      { name: 'Gheorghe Hagi', team: 'Efsane / Galatasaray', logo: '👑', nation: '🇷🇴 Romanya', pos: 'CAM', ovr: '93 OVR', history: ['Steaua Bükreş', 'Real Madrid', 'Brescia', 'Barcelona', 'Galatasaray'] },
+      { name: 'Cristiano Ronaldo', team: 'Al-Nassr FC', logo: '🟡', nation: '🇵🇹 Portekiz', pos: 'ST', ovr: '91 OVR', history: ['Sporting CP', 'Man United', 'Real Madrid', 'Juventus', 'Al-Nassr'] },
+      { name: 'Lionel Messi', team: 'Inter Miami CF', logo: '💗', nation: '🇦🇷 Arjantin', pos: 'RW', ovr: '92 OVR', history: ['Newell\'s', 'Barcelona', 'PSG', 'Inter Miami'] },
+      { name: 'Zinedine Zidane', team: 'Efsane / Real Madrid', logo: '👑', nation: '🇫🇷 Fransa', pos: 'CM', ovr: '95 OVR', history: ['Cannes', 'Bordeaux', 'Juventus', 'Real Madrid'] },
+      { name: 'Kylian Mbappé', team: 'Real Madrid C.F.', logo: '⚪', nation: '🇫🇷 Fransa', pos: 'ST', ovr: '92 OVR', history: ['AS Monaco', 'PSG', 'Real Madrid'] },
+      { name: 'Jude Bellingham', team: 'Real Madrid C.F.', logo: '⚪', nation: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 İngiltere', pos: 'CAM', ovr: '90 OVR', history: ['Birmingham', 'Dortmund', 'Real Madrid'] },
+      { name: 'Lamine Yamal', team: 'FC Barcelona', logo: '🔵🔴', nation: '🇪🇸 İspanya', pos: 'RW', ovr: '86 OVR', history: ['La Masia', 'FC Barcelona'] }
     ];
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -1206,6 +1275,8 @@
 
     socket.on('matchFound', (data) => {
       roomId = data.roomId;
+      opponentUser = data.opponent || { username: 'Efsane_Rakip', eloRating: 2430, avatar: null };
+      updateMatchProfilesUI();
       showView('viewDraft');
     });
 
@@ -1276,6 +1347,7 @@
             username: `Guest_${randNum}`,
             favTeam: 'Beşiktaş',
             eloRating: 2450,
+            avatar: null,
             isAdmin: false
           };
         } else {
@@ -1285,6 +1357,7 @@
             username: 'Süleyman',
             favTeam: 'Beşiktaş',
             eloRating: 2450,
+            avatar: null,
             isAdmin: true
           };
         }
@@ -1292,7 +1365,6 @@
         updateUserProfileUI();
         showView('viewHome');
       } catch (err) {
-        console.error('Demo login error:', err);
         showView('viewHome');
       }
     }
@@ -1305,22 +1377,23 @@
 
     function updateUserProfileUI() {
       if (!currentUser) return;
+      
       const nameElem = document.getElementById('usernameDisplay') || document.getElementById('userNameDisplay');
       if (nameElem) nameElem.innerText = currentUser.username;
       
+      const editName = document.getElementById('editUsername');
+      if (editName) editName.value = currentUser.username;
+
+      const editTeam = document.getElementById('editFavTeam');
+      if (editTeam && currentUser.favTeam) editTeam.value = currentUser.favTeam;
+
       const favElem = document.getElementById('favTeamDisplay') || document.getElementById('userSubDisplay');
       if (favElem) {
-        const isAdmin = currentUser.isAdmin || (currentUser.username && currentUser.username.toLowerCase().includes('suleyman'));
-        favElem.innerText = currentUser.favTeam ? `🦅 ${currentUser.favTeam}` : (isAdmin ? '🛡️ Yönetici (Admin)' : 'Üye Oyuncu');
+        favElem.innerText = currentUser.favTeam ? `🦅 ${currentUser.favTeam}` : '🦅 Beşiktaş J.K.';
       }
-      
-      const avatarBox = document.getElementById('userAvatar') || document.getElementById('userAvatarBox');
-      const profAvatarBox = document.getElementById('profAvatarBox');
-      if (avatarBox) {
-        const initial = currentUser.username.substring(0, 1).toUpperCase();
-        avatarBox.innerHTML = initial;
-        if (profAvatarBox) profAvatarBox.innerHTML = initial;
-      }
+
+      renderUserAvatarHTML(currentUser, 'homeUserAvatarBox', 'userAvatar');
+      renderUserAvatarHTML(currentUser, 'settingsAvatarDisplay', 'profAvatarBox');
 
       const eloElem = document.getElementById('userEloDisplay');
       if (eloElem) eloElem.innerText = `${currentUser.eloRating || 2450} ELO ↗`;
@@ -1329,6 +1402,73 @@
       if (isAdmin) {
         const card = document.getElementById('adminPanelCard');
         if (card) card.style.display = 'flex';
+      }
+    }
+
+    function renderUserAvatarHTML(user, containerId, fallbackId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      if (user && user.avatar) {
+        container.innerHTML = `<img src="${user.avatar}" class="profile-avatar-img" style="width:100%; height:100%;">`;
+      } else {
+        const initial = (user && user.username) ? user.username.substring(0, 1).toUpperCase() : 'S';
+        container.innerHTML = `<div class="profile-avatar-placeholder" id="${fallbackId}">${initial}</div>`;
+      }
+    }
+
+    function selectPresetAvatar(url) {
+      if (!currentUser) return;
+      currentUser.avatar = url;
+      localStorage.setItem('football_link_user', JSON.stringify(currentUser));
+      updateUserProfileUI();
+      alert('✅ Profil fotoğrafınız başarıyla güncellendi!');
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        selectPresetAvatar(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveProfileChanges() {
+      if (!currentUser) return;
+      const newName = document.getElementById('editUsername').value.trim();
+      const newTeam = document.getElementById('editFavTeam').value;
+      if (newName) currentUser.username = newName;
+      if (newTeam) currentUser.favTeam = newTeam;
+
+      localStorage.setItem('football_link_user', JSON.stringify(currentUser));
+      updateUserProfileUI();
+      alert('💾 Profil ayarlarınız başarıyla kaydedildi!');
+    }
+
+    function updateMatchProfilesUI() {
+      renderUserAvatarHTML(currentUser, 'searchP1AvatarContainer', 'searchP1Avatar');
+      document.getElementById('searchP1Name').innerText = currentUser.username;
+      document.getElementById('searchP1Team').innerText = `🦅 ${currentUser.favTeam || 'Beşiktaş'}`;
+
+      if (opponentUser) {
+        const p2Cont = document.getElementById('searchP2Container');
+        p2Cont.innerHTML = `
+          <div style="width: 54px; height: 54px; border-radius: 50%; border: 2px solid var(--accent-warning); overflow:hidden; background: var(--bg-active);">
+            ${opponentUser.avatar ? `<img src="${opponentUser.avatar}" style="width:100%; height:100%; object-fit:cover;">` : `<div class="profile-avatar-placeholder" style="border-color:var(--accent-warning); color:var(--accent-warning);">${opponentUser.username.substring(0,1).toUpperCase()}</div>`}
+          </div>
+          <div style="font-weight: 900; font-size: 13px; color: var(--accent-warning); margin-top: 2px;">${opponentUser.username}</div>
+          <div style="font-size: 10px; font-weight: 800; color: var(--accent-green);">${opponentUser.eloRating || 2430} ELO</div>
+        `;
+      }
+
+      renderUserAvatarHTML(currentUser, 'arenaP1AvatarBox', 'arenaP1Avatar');
+      document.getElementById('arenaP1Name').innerText = currentUser.username;
+
+      if (opponentUser) {
+        const p2Box = document.getElementById('arenaP2AvatarBox');
+        p2Box.innerHTML = opponentUser.avatar ? `<img src="${opponentUser.avatar}" class="profile-avatar-img" style="width:40px; height:40px;">` : `<div class="profile-avatar-placeholder" style="width:40px; height:40px; font-size:16px; border-color:var(--accent-warning); color:var(--accent-warning);">${opponentUser.username.substring(0,1).toUpperCase()}</div>`;
+        document.getElementById('arenaP2Name').innerText = opponentUser.username;
       }
     }
 
@@ -1368,8 +1508,9 @@
     function openAdminPanel() { showView('viewAdmin'); }
 
     function start1v1Queue() {
+      updateMatchProfilesUI();
       showView('viewSearch');
-      socket.emit('joinQueue', { userId: currentUser.userId, username: currentUser.username });
+      socket.emit('joinQueue', { userId: currentUser.userId, username: currentUser.username, avatar: currentUser.avatar });
     }
 
     function cancelSearch() {
@@ -1387,8 +1528,8 @@
       const myScore = isPlayer1 ? (scores.player1 || 0) : (scores.player2 || 0);
       const oppScore = isPlayer1 ? (scores.player2 || 0) : (scores.player1 || 0);
 
-      document.getElementById('p1Label').innerText = `SEN: ${myScore}`;
-      document.getElementById('p2Label').innerText = `RAKİP: ${oppScore}`;
+      document.getElementById('p1Label').innerText = `${myScore} Puan`;
+      document.getElementById('p2Label').innerText = `${oppScore} Puan`;
       document.getElementById('nameA').innerText = myTeam.name;
       document.getElementById('logoA').src = myTeam.logo || 'https://media.api-sports.io/football/teams/541.png';
       document.getElementById('nameB').innerText = oppTeam.name;
